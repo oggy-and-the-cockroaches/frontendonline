@@ -1078,6 +1078,80 @@ h1, h2, h3, h4 {
   .dash-mock-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ==========================================================================
+   Vulnerabilities Blocked & Audited Section
+   ========================================================================== */
+.vulns-matrix-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.vuln-spec-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 26px;
+  transition: var(--transition-smooth);
+}
+
+.vuln-spec-card:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+}
+
+.vuln-spec-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.vuln-spec-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.vuln-blocked-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.vuln-sig-pill {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.28);
+  color: #fda4af;
+  font-family: var(--font-code);
+  font-size: 0.74rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.vuln-fix-pill {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  color: #6ee7b7;
+  font-size: 0.82rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+@media (max-width: 992px) {
+  .vulns-matrix-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1105,6 +1179,7 @@ h1, h2, h3, h4 {
       <nav class="nav-links">
         <a href="#pitch-story">Pitch</a>
         <a href="#screenshots">Screenshots</a>
+        <a href="#blocked-vulnerabilities">Blocked Vulns</a>
         <a href="#titans-comparison">Comparison</a>
         <a href="#why-open-source">Why Open Source?</a>
         <a href="#how-to-run">How to Run</a>
@@ -1166,14 +1241,14 @@ h1, h2, h3, h4 {
 
           <div class="checksum-box" style="max-width: 580px;">
             <span style="color: var(--accent-cyan); font-weight: 600;">OPEN SOURCE:</span>
-            <span class="checksum-text">git clone https://github.com/oggy-and-the-cockroaches/Hacktober.git</span>
+            <span class="checksum-text">git clone https://github.com/oggy-and-the-cockroaches/hacktober/oggy-and-the-cockroaches/hacktober</span>
             <button class="copy-trigger" data-target="quick-run-code" title="Copy command" style="background:none;border:none;color:#94a3b8;cursor:pointer;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
               </svg>
             </button>
-            <span id="quick-run-code" style="display:none;" data-copy="git clone https://github.com/oggy-and-the-cockroaches/Hacktober.git"></span>
+            <span id="quick-run-code" style="display:none;" data-copy="git clone https://github.com/oggy-and-the-cockroaches/hacktober/oggy-and-the-cockroaches/hacktober"></span>
           </div>
         </div>
 
@@ -1412,6 +1487,185 @@ h1, h2, h3, h4 {
         </div>
       </div>
     </section>
+
+    
+    <!-- Vulnerabilities Blocked & Audited Catalog -->
+    <section class="container" id="blocked-vulnerabilities" style="padding: 90px 0;">
+      <div class="section-header">
+        <span class="section-pill">THREAT MITIGATION CATALOG</span>
+        <h2 class="section-title">Vulnerabilities Detected &amp; Blocked by Shipcheck</h2>
+        <p class="section-subtitle">
+          Shipcheck detects these vulnerabilities statically during code review, synthesizes drop-in AI patches, and drops attack payloads in under 0.5ms with the native C++ Hyperion WAF.
+        </p>
+      </div>
+
+      <div class="vulns-matrix-grid">
+        <!-- 1. SQLi -->
+        <div class="vuln-spec-card">
+          <div class="vuln-spec-header">
+            <div class="vuln-spec-title">
+              <span>💉</span>
+              <span>Classic &amp; Blind SQL Injection</span>
+            </div>
+            <span class="tag-badge tag-danger">CWE-89 • Critical</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Catches quotation breakout, tautology bypasses, and time-based inference attempts before queries touch the database engine.
+          </p>
+          <div class="vuln-blocked-pills">
+            <span class="vuln-sig-pill">pg_sleep(</span>
+            <span class="vuln-sig-pill">waitfor delay</span>
+            <span class="vuln-sig-pill">benchmark(</span>
+            <span class="vuln-sig-pill">union select</span>
+            <span class="vuln-sig-pill">' or '1'='1</span>
+            <span class="vuln-sig-pill">'; drop table</span>
+            <span class="vuln-sig-pill">1=1--</span>
+            <span class="vuln-sig-pill">information_schema</span>
+          </div>
+          <div class="vuln-fix-pill">
+            <span>🛡️</span>
+            <span><strong>Shipcheck AI Fix:</strong> Auto-synthesizes parameterized queries, prepared statement bindings &amp; bcrypt password comparison.</span>
+          </div>
+        </div>
+
+        <!-- 2. XSS -->
+        <div class="vuln-spec-card">
+          <div class="vuln-spec-header">
+            <div class="vuln-spec-title">
+              <span>🛡️</span>
+              <span>Cross-Site Scripting (XSS)</span>
+            </div>
+            <span class="tag-badge tag-danger">CWE-79 • High</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Prevents malicious JavaScript injection, session token exfiltration, and reflected or stored DOM payload execution.
+          </p>
+          <div class="vuln-blocked-pills">
+            <span class="vuln-sig-pill">&lt;script</span>
+            <span class="vuln-sig-pill">javascript:</span>
+            <span class="vuln-sig-pill">onerror=</span>
+            <span class="vuln-sig-pill">onload=</span>
+            <span class="vuln-sig-pill">onclick=</span>
+            <span class="vuln-sig-pill">eval(</span>
+            <span class="vuln-sig-pill">document.cookie</span>
+            <span class="vuln-sig-pill">&lt;img src=x</span>
+          </div>
+          <div class="vuln-fix-pill">
+            <span>🛡️</span>
+            <span><strong>Shipcheck AI Fix:</strong> Replaces raw HTML concatenation with DOM textContent, safe template escaping, and Content-Security-Policy headers.</span>
+          </div>
+        </div>
+
+        <!-- 3. RCE -->
+        <div class="vuln-spec-card">
+          <div class="vuln-spec-header">
+            <div class="vuln-spec-title">
+              <span>⚡</span>
+              <span>Remote Code Execution (RCE)</span>
+            </div>
+            <span class="tag-badge tag-danger">CWE-78 • Critical</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Blocks arbitrary command chaining, shell metacharacters, and reverse shell spawning via unsanitized system arguments.
+          </p>
+          <div class="vuln-blocked-pills">
+            <span class="vuln-sig-pill">/bin/sh</span>
+            <span class="vuln-sig-pill">/bin/bash</span>
+            <span class="vuln-sig-pill">powershell</span>
+            <span class="vuln-sig-pill">cmd.exe</span>
+            <span class="vuln-sig-pill">; cat /etc/passwd</span>
+            <span class="vuln-sig-pill">curl http://</span>
+            <span class="vuln-sig-pill">rm -rf /</span>
+            <span class="vuln-sig-pill">$(whoami)</span>
+          </div>
+          <div class="vuln-fix-pill">
+            <span>🛡️</span>
+            <span><strong>Shipcheck AI Fix:</strong> Refactors commands to safe argument arrays using subprocess.run(shell=False) with strict IP and type validation.</span>
+          </div>
+        </div>
+
+        <!-- 4. Path Traversal & LFI -->
+        <div class="vuln-spec-card">
+          <div class="vuln-spec-header">
+            <div class="vuln-spec-title">
+              <span>📂</span>
+              <span>Path Traversal &amp; LFI</span>
+            </div>
+            <span class="tag-badge tag-danger">CWE-22 • High</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Prevents attackers from breaking out of intended web root directories to view sensitive system files or environment configs.
+          </p>
+          <div class="vuln-blocked-pills">
+            <span class="vuln-sig-pill">../</span>
+            <span class="vuln-sig-pill">..\</span>
+            <span class="vuln-sig-pill">/etc/passwd</span>
+            <span class="vuln-sig-pill">/etc/shadow</span>
+            <span class="vuln-sig-pill">C:\windows\win.ini</span>
+            <span class="vuln-sig-pill">..%2f..%2f</span>
+            <span class="vuln-sig-pill">/proc/self/environ</span>
+          </div>
+          <div class="vuln-fix-pill">
+            <span>🛡️</span>
+            <span><strong>Shipcheck AI Fix:</strong> Canonicalizes paths with os.path.realpath() and enforces strict base directory root boundary containment.</span>
+          </div>
+        </div>
+
+        <!-- 5. SSRF -->
+        <div class="vuln-spec-card">
+          <div class="vuln-spec-header">
+            <div class="vuln-spec-title">
+              <span>🌐</span>
+              <span>Server-Side Request Forgery (SSRF)</span>
+            </div>
+            <span class="tag-badge tag-danger">CWE-918 • High</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Shields internal network ports and cloud instance metadata endpoints from unauthorized egress fetch requests.
+          </p>
+          <div class="vuln-blocked-pills">
+            <span class="vuln-sig-pill">169.254.169.254</span>
+            <span class="vuln-sig-pill">metadata.google.internal</span>
+            <span class="vuln-sig-pill">localhost</span>
+            <span class="vuln-sig-pill">127.0.0.1</span>
+            <span class="vuln-sig-pill">file://</span>
+            <span class="vuln-sig-pill">dict://</span>
+            <span class="vuln-sig-pill">10.0.0.0/8</span>
+          </div>
+          <div class="vuln-fix-pill">
+            <span>🛡️</span>
+            <span><strong>Shipcheck AI Fix:</strong> Validates outgoing URLs against domain whitelists and blocks private and loopback IP ranges.</span>
+          </div>
+        </div>
+
+        <!-- 6. Secrets & Weak Crypto -->
+        <div class="vuln-spec-card">
+          <div class="vuln-spec-header">
+            <div class="vuln-spec-title">
+              <span>🔑</span>
+              <span>Hardcoded Secrets &amp; Auth Bypass</span>
+            </div>
+            <span class="tag-badge tag-danger">CWE-798 • Critical</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.88rem;">
+            Identifies leaked private keys, JWT secrets, database connection URIs, and weak cryptographic algorithms.
+          </p>
+          <div class="vuln-blocked-pills">
+            <span class="vuln-sig-pill">Hardcoded API Keys</span>
+            <span class="vuln-sig-pill">JWT Secret Constants</span>
+            <span class="vuln-sig-pill">DB Password URIs</span>
+            <span class="vuln-sig-pill">MD5 / SHA1 Hash</span>
+            <span class="vuln-sig-pill">Wildcard CORS *</span>
+            <span class="vuln-sig-pill">Missing HSTS</span>
+          </div>
+          <div class="vuln-fix-pill">
+            <span>🛡️</span>
+            <span><strong>Shipcheck AI Fix:</strong> Automatically migrates credentials to .env / Pydantic settings, enforces bcrypt, and configures strict CORS origins.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
 
     <!-- Head-to-Head Comparison: Shipcheck vs Industry Titans -->
     <section class="container" id="titans-comparison" style="padding: 100px 0;">
@@ -1714,9 +1968,10 @@ h1, h2, h3, h4 {
         <div class="footer-links">
           <a href="#pitch-story">Pitch</a>
           <a href="#screenshots">Screenshots</a>
-          <a href="#titans-comparison">Comparison</a>
+          <a href="#blocked-vulnerabilities">Blocked Vulns</a>
+        <a href="#titans-comparison">Comparison</a>
           <a href="#downloads">Downloads</a>
-          <a href="https://github.com/oggy-and-the-cockroaches/Hacktober" target="_blank" rel="noopener">GitHub Repository</a>
+          <a href="https://github.com/oggy-and-the-cockroaches/hacktober/oggy-and-the-cockroaches/hacktober" target="_blank" rel="noopener">GitHub Repository</a>
         </div>
       </div>
 
