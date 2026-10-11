@@ -1283,6 +1283,176 @@ h1, h2, h3, h4 {
   }
 }
 
+/* ==========================================================================
+   13 Injections + DDoS & Infrastructure Shields
+   ========================================================================== */
+.ddos-highlight-card {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(245, 158, 11, 0.12) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: var(--radius-xl);
+  padding: 32px 28px;
+  margin-bottom: 36px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 24px;
+  align-items: center;
+  box-shadow: 0 0 35px rgba(239, 68, 68, 0.12);
+}
+
+.ddos-icon-large {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.ddos-content h3 {
+  font-size: 1.4rem;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.ddos-content p {
+  color: var(--text-muted);
+  font-size: 0.94rem;
+  line-height: 1.6;
+}
+
+.ddos-specs {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.ddos-spec-pill {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  color: #fca5a5;
+}
+
+.injections-13-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.injection-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 22px 20px;
+  position: relative;
+  transition: var(--transition-smooth);
+  display: flex;
+  flex-direction: column;
+}
+
+.injection-card:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+}
+
+.inj-num-pill {
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.inj-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.inj-title {
+  font-size: 1.08rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.inj-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+  flex: 1;
+}
+
+.inj-payloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.inj-payload-tag {
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.25);
+  color: #fda4af;
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.inj-fix-tip {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  color: #6ee7b7;
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.infra-shields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.infra-shield-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 26px 24px;
+  transition: var(--transition-smooth);
+}
+
+.infra-shield-card:hover {
+  border-color: var(--border-emerald);
+  transform: translateY(-3px);
+}
+
+@media (max-width: 1100px) {
+  .injections-13-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .injections-13-grid, .infra-shields-grid {
+    grid-template-columns: 1fr;
+  }
+  .ddos-highlight-card {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1686,177 +1856,347 @@ h1, h2, h3, h4 {
 
     
     <!-- Vulnerabilities Blocked & Audited Catalog -->
+    <!-- Complete Threat Mitigation: 13 Injections + DDoS & Infrastructure Shields -->
     <section class="container" id="blocked-vulnerabilities" style="padding: 90px 0;">
       <div class="section-header">
-        <span class="section-pill">THREAT MITIGATION CATALOG</span>
-        <h2 class="section-title">Vulnerabilities Detected &amp; Blocked by Shipcheck</h2>
+        <span class="section-pill">FULL DEFENSIVE COVERAGE</span>
+        <h2 class="section-title">The 13 Injections We Block + DDoS Protection</h2>
         <p class="section-subtitle">
-          Shipcheck detects these vulnerabilities statically during code review, synthesizes drop-in AI patches, and drops attack payloads in under 0.5ms with the native C++ Hyperion WAF.
+          Every inbound HTTP request passes through our native C++ Hyperion WAF reverse proxy. Threats are analyzed in under 0.5ms with zero application code changes.
         </p>
       </div>
 
-      <div class="vulns-matrix-grid">
-        <!-- 1. SQLi -->
-        <div class="vuln-spec-card">
-          <div class="vuln-spec-header">
-            <div class="vuln-spec-title">
-              <span>💉</span>
-              <span>Classic &amp; Blind SQL Injection</span>
-            </div>
+      <!-- DDoS & Traffic Surge Protection Banner -->
+      <div class="ddos-highlight-card">
+        <div class="ddos-icon-large">🛡️</div>
+        <div class="ddos-content">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <h3>DDoS, HTTP Flood &amp; Traffic Surge Barrier</h3>
+            <span class="tag-badge tag-danger">High Availability Defense</span>
+          </div>
+          <p>
+            Shipcheck's Sentinel reverse proxy embeds an autonomous token-bucket rate limiter. It stops HTTP floods, connection starvation attacks, and rapid brute-force credential stuffing before packets reach your backend web server.
+          </p>
+          <div class="ddos-specs">
+            <span class="ddos-spec-pill">Rate Limit: 60 req / 2s Window</span>
+            <span class="ddos-spec-pill">Route Burst Barrier: 120 Max Burst</span>
+            <span class="ddos-spec-pill">Action: HTTP 429 &amp; Immediate Drop</span>
+            <span class="ddos-spec-pill">Zero CPU Thrash</span>
+          </div>
+        </div>
+        <div>
+          <span class="status-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; border-color: rgba(16, 185, 129, 0.4);">
+            <span class="pulse-dot"></span>
+            ACTIVE SHIELD
+          </span>
+        </div>
+      </div>
+
+      <!-- The 13 Specific Injections Grid -->
+      <h3 style="font-size: 1.4rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: var(--accent-cyan);">⚡</span>
+        <span>The 13 Native Injection Vectors Blocked by Hyperion Engine:</span>
+      </h3>
+
+      <div class="injections-13-grid">
+        <!-- 1. Blind SQL Injection -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 01</span>
             <span class="tag-badge tag-danger">CWE-89 • Critical</span>
           </div>
-          <p style="color: var(--text-muted); font-size: 0.88rem;">
-            Catches quotation breakout, tautology bypasses, and time-based inference attempts before queries touch the database engine.
-          </p>
-          <div class="vuln-blocked-pills">
-            <span class="vuln-sig-pill">pg_sleep(</span>
-            <span class="vuln-sig-pill">waitfor delay</span>
-            <span class="vuln-sig-pill">benchmark(</span>
-            <span class="vuln-sig-pill">union select</span>
-            <span class="vuln-sig-pill">' or '1'='1</span>
-            <span class="vuln-sig-pill">'; drop table</span>
-            <span class="vuln-sig-pill">1=1--</span>
-            <span class="vuln-sig-pill">information_schema</span>
+          <div class="inj-title">Blind SQL Injection</div>
+          <div class="inj-desc">Time-delay and inference workloads that exfiltrate data character-by-character without generating error responses.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">pg_sleep()</span>
+            <span class="inj-payload-tag">waitfor delay</span>
+            <span class="inj-payload-tag">benchmark()</span>
+            <span class="inj-payload-tag">sleep()</span>
           </div>
-          <div class="vuln-fix-pill">
-            <span>🛡️</span>
-            <span><strong>Shipcheck AI Fix:</strong> Auto-synthesizes parameterized queries, prepared statement bindings &amp; bcrypt password comparison.</span>
-          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Parameterized SQL bindings &amp; query bounds.</div>
         </div>
 
-        <!-- 2. XSS -->
-        <div class="vuln-spec-card">
-          <div class="vuln-spec-header">
-            <div class="vuln-spec-title">
-              <span>🛡️</span>
-              <span>Cross-Site Scripting (XSS)</span>
-            </div>
+        <!-- 2. Classic & Union SQL Injection -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 02</span>
+            <span class="tag-badge tag-danger">CWE-89 • Critical</span>
+          </div>
+          <div class="inj-title">Classic &amp; Union SQL Injection</div>
+          <div class="inj-desc">Tautologies, UNION queries, stacked queries, and schema-dumping payloads that bypass authentication or dump tables.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">union select</span>
+            <span class="inj-payload-tag">' or '1'='1</span>
+            <span class="inj-payload-tag">'; drop table</span>
+            <span class="inj-payload-tag">1=1--</span>
+            <span class="inj-payload-tag">information_schema</span>
+          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Prepared statements &amp; bcrypt password hashing.</div>
+        </div>
+
+        <!-- 3. Cross-Site Scripting (XSS) -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 03</span>
             <span class="tag-badge tag-danger">CWE-79 • High</span>
           </div>
-          <p style="color: var(--text-muted); font-size: 0.88rem;">
-            Prevents malicious JavaScript injection, session token exfiltration, and reflected or stored DOM payload execution.
-          </p>
-          <div class="vuln-blocked-pills">
-            <span class="vuln-sig-pill">&lt;script</span>
-            <span class="vuln-sig-pill">javascript:</span>
-            <span class="vuln-sig-pill">onerror=</span>
-            <span class="vuln-sig-pill">onload=</span>
-            <span class="vuln-sig-pill">onclick=</span>
-            <span class="vuln-sig-pill">eval(</span>
-            <span class="vuln-sig-pill">document.cookie</span>
-            <span class="vuln-sig-pill">&lt;img src=x</span>
+          <div class="inj-title">Cross-Site Scripting (XSS)</div>
+          <div class="inj-desc">Malicious JavaScript injection in request parameters targeting browser session cookies and local storage tokens.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">&lt;script</span>
+            <span class="inj-payload-tag">javascript:</span>
+            <span class="inj-payload-tag">onerror=</span>
+            <span class="inj-payload-tag">onload=</span>
+            <span class="inj-payload-tag">document.cookie</span>
           </div>
-          <div class="vuln-fix-pill">
-            <span>🛡️</span>
-            <span><strong>Shipcheck AI Fix:</strong> Replaces raw HTML concatenation with DOM textContent, safe template escaping, and Content-Security-Policy headers.</span>
-          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Context-aware HTML escaping &amp; CSP enforcement.</div>
         </div>
 
-        <!-- 3. RCE -->
-        <div class="vuln-spec-card">
-          <div class="vuln-spec-header">
-            <div class="vuln-spec-title">
-              <span>⚡</span>
-              <span>Remote Code Execution (RCE)</span>
-            </div>
+        <!-- 4. HTML Injection -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 04</span>
+            <span class="tag-badge tag-danger">CWE-79 • Medium</span>
+          </div>
+          <div class="inj-title">HTML Injection</div>
+          <div class="inj-desc">Untrusted markup tags (iframes, embedded objects, spoofed forms) reflected into web responses to phish credentials.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">&lt;iframe</span>
+            <span class="inj-payload-tag">&lt;object</span>
+            <span class="inj-payload-tag">&lt;embed</span>
+            <span class="inj-payload-tag">&lt;form</span>
+            <span class="inj-payload-tag">&lt;svg</span>
+          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> DOM textContent assignment &amp; frame sandboxing.</div>
+        </div>
+
+        <!-- 5. Server-Side Template Injection (SSTI) -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 05</span>
+            <span class="tag-badge tag-danger">CWE-1336 • Critical</span>
+          </div>
+          <div class="inj-title">Server-Side Template (SSTI)</div>
+          <div class="inj-desc">Attacker expressions breaking out of template engines (Jinja2, Twig, Mako) to invoke system objects and escape sandboxes.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">{{...}}</span>
+            <span class="inj-payload-tag">${...}</span>
+            <span class="inj-payload-tag">&lt;%=...%&gt;</span>
+            <span class="inj-payload-tag">__class__.__mro__</span>
+          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Safe template context passing without string rendering.</div>
+        </div>
+
+        <!-- 6. Server-Side Includes (SSI) Injection -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 06</span>
+            <span class="tag-badge tag-danger">CWE-97 • High</span>
+          </div>
+          <div class="inj-title">Server-Side Includes (SSI)</div>
+          <div class="inj-desc">Directives that trick legacy web servers and preprocessors into executing arbitrary shell scripts on the host server.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">&lt;!--#exec</span>
+            <span class="inj-payload-tag">&lt;!--#include</span>
+            <span class="inj-payload-tag">&lt;!--#echo</span>
+            <span class="inj-payload-tag">&lt;!--#config</span>
+          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Disabling server execution flags &amp; input sanitization.</div>
+        </div>
+
+        <!-- 7. XPath Injection -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 07</span>
+            <span class="tag-badge tag-danger">CWE-643 • High</span>
+          </div>
+          <div class="inj-title">XPath Injection</div>
+          <div class="inj-desc">Syntax manipulation in XML database query paths allowing attackers to navigate unauthorized XML data trees.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">//*[</span>
+            <span class="inj-payload-tag">]|//</span>
+            <span class="inj-payload-tag">' or '1'='1</span>
+            <span class="inj-payload-tag">/parent::*</span>
+          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Parameterized XPath variables &amp; schema validation.</div>
+        </div>
+
+        <!-- 8. LDAP Injection -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 08</span>
+            <span class="tag-badge tag-danger">CWE-90 • High</span>
+          </div>
+          <div class="inj-title">LDAP Injection</div>
+          <div class="inj-desc">Filter metacharacter injections that manipulate corporate directory lookups, bypassing enterprise single sign-on.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">)(|</span>
+            <span class="inj-payload-tag">)(&amp;</span>
+            <span class="inj-payload-tag">*(|</span>
+            <span class="inj-payload-tag">null byte</span>
+          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> RFC 4515 LDAP query encoding &amp; search filters.</div>
+        </div>
+
+        <!-- 9. XML Entity Injection (XXE) -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 09</span>
+            <span class="tag-badge tag-danger">CWE-611 • Critical</span>
+          </div>
+          <div class="inj-title">XML Entity Injection (XXE)</div>
+          <div class="inj-desc">Malicious external entity declarations that force XML parsers to disclose local files, internal SSRF ports, or trigger DoS.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">&lt;!DOCTYPE</span>
+            <span class="inj-payload-tag">&lt;!ENTITY SYSTEM</span>
+            <span class="inj-payload-tag">&lt;!ENTITY PUBLIC</span>
+          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Disabling resolve_entities and DTD processing.</div>
+        </div>
+
+        <!-- 10. OS Command Injection -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 10</span>
             <span class="tag-badge tag-danger">CWE-78 • Critical</span>
           </div>
-          <p style="color: var(--text-muted); font-size: 0.88rem;">
-            Blocks arbitrary command chaining, shell metacharacters, and reverse shell spawning via unsanitized system arguments.
-          </p>
-          <div class="vuln-blocked-pills">
-            <span class="vuln-sig-pill">/bin/sh</span>
-            <span class="vuln-sig-pill">/bin/bash</span>
-            <span class="vuln-sig-pill">powershell</span>
-            <span class="vuln-sig-pill">cmd.exe</span>
-            <span class="vuln-sig-pill">; cat /etc/passwd</span>
-            <span class="vuln-sig-pill">curl http://</span>
-            <span class="vuln-sig-pill">rm -rf /</span>
-            <span class="vuln-sig-pill">$(whoami)</span>
+          <div class="inj-title">OS Command Injection</div>
+          <div class="inj-desc">Command concatenation operators that execute host discovery and reconnaissance commands via vulnerable system calls.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">; whoami</span>
+            <span class="inj-payload-tag">&amp;&amp; whoami</span>
+            <span class="inj-payload-tag">| whoami</span>
+            <span class="inj-payload-tag">; id</span>
+            <span class="inj-payload-tag">; dir</span>
           </div>
-          <div class="vuln-fix-pill">
-            <span>🛡️</span>
-            <span><strong>Shipcheck AI Fix:</strong> Refactors commands to safe argument arrays using subprocess.run(shell=False) with strict IP and type validation.</span>
-          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Executing commands with array arguments without shell=True.</div>
         </div>
 
-        <!-- 4. Path Traversal & LFI -->
-        <div class="vuln-spec-card">
-          <div class="vuln-spec-header">
-            <div class="vuln-spec-title">
-              <span>📂</span>
-              <span>Path Traversal &amp; LFI</span>
-            </div>
+        <!-- 11. Remote Code Execution (RCE) -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 11</span>
+            <span class="tag-badge tag-danger">CWE-94 • Critical</span>
+          </div>
+          <div class="inj-title">Remote Code Execution (RCE)</div>
+          <div class="inj-desc">Direct invocation of shell interpreters, reverse shells, or remote downloaders (curl, wget) that take over the entire server.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">/bin/sh</span>
+            <span class="inj-payload-tag">/bin/bash</span>
+            <span class="inj-payload-tag">powershell</span>
+            <span class="inj-payload-tag">cmd.exe</span>
+            <span class="inj-payload-tag">curl http://</span>
+          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Removing dynamic code evaluation and system popens.</div>
+        </div>
+
+        <!-- 12. CRLF Injection / HTTP Response Splitting -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 12</span>
+            <span class="tag-badge tag-danger">CWE-113 • High</span>
+          </div>
+          <div class="inj-title">CRLF / Response Splitting</div>
+          <div class="inj-desc">Carriage return and line feed character injection used to smuggle malicious HTTP headers, set forged cookies, or poison caches.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">\r\n</span>
+            <span class="inj-payload-tag">\nSet-Cookie:</span>
+            <span class="inj-payload-tag">\r\nLocation:</span>
+          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Stripping newline characters before writing response headers.</div>
+        </div>
+
+        <!-- 13. Path Traversal & LFI -->
+        <div class="injection-card">
+          <div class="inj-header">
+            <span class="inj-num-pill">INJECTION 13</span>
             <span class="tag-badge tag-danger">CWE-22 • High</span>
           </div>
-          <p style="color: var(--text-muted); font-size: 0.88rem;">
-            Prevents attackers from breaking out of intended web root directories to view sensitive system files or environment configs.
-          </p>
-          <div class="vuln-blocked-pills">
-            <span class="vuln-sig-pill">../</span>
-            <span class="vuln-sig-pill">..\</span>
-            <span class="vuln-sig-pill">/etc/passwd</span>
-            <span class="vuln-sig-pill">/etc/shadow</span>
-            <span class="vuln-sig-pill">C:\windows\win.ini</span>
-            <span class="vuln-sig-pill">..%2f..%2f</span>
-            <span class="vuln-sig-pill">/proc/self/environ</span>
+          <div class="inj-title">Path Traversal &amp; LFI</div>
+          <div class="inj-desc">Dot-dot-slash sequence payloads that escape designated web directories to read sensitive host files like /etc/passwd or win.ini.</div>
+          <div class="inj-payloads">
+            <span class="inj-payload-tag">../</span>
+            <span class="inj-payload-tag">..\\</span>
+            <span class="inj-payload-tag">/etc/passwd</span>
+            <span class="inj-payload-tag">C:\\windows\\win.ini</span>
+            <span class="inj-payload-tag">..%2f..%2f</span>
           </div>
-          <div class="vuln-fix-pill">
-            <span>🛡️</span>
-            <span><strong>Shipcheck AI Fix:</strong> Canonicalizes paths with os.path.realpath() and enforces strict base directory root boundary containment.</span>
-          </div>
+          <div class="inj-fix-tip">🛡️ <strong>AI Fix:</strong> Canonical path verification via os.path.realpath().</div>
         </div>
+      </div>
 
-        <!-- 5. SSRF -->
-        <div class="vuln-spec-card">
-          <div class="vuln-spec-header">
-            <div class="vuln-spec-title">
+      <!-- Remaining Security Shields -->
+      <h3 style="font-size: 1.4rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+        <span style="color: var(--accent-emerald);">🛡️</span>
+        <span>Additional Automated Defense Shields Built into Shipcheck:</span>
+      </h3>
+
+      <div class="infra-shields-grid">
+        <!-- Shield 1: SSRF -->
+        <div class="infra-shield-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 1.15rem; font-weight: 700;">
               <span>🌐</span>
-              <span>Server-Side Request Forgery (SSRF)</span>
+              <span>SSRF &amp; Cloud Metadata Protection</span>
             </div>
             <span class="tag-badge tag-danger">CWE-918 • High</span>
           </div>
-          <p style="color: var(--text-muted); font-size: 0.88rem;">
-            Shields internal network ports and cloud instance metadata endpoints from unauthorized egress fetch requests.
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+            Protects internal microservices and AWS/GCP instance metadata endpoints from egress exfiltration. Blocks requests attempting to fetch <code>169.254.169.254</code>, <code>metadata.google.internal</code>, or private IP networks.
           </p>
-          <div class="vuln-blocked-pills">
-            <span class="vuln-sig-pill">169.254.169.254</span>
-            <span class="vuln-sig-pill">metadata.google.internal</span>
-            <span class="vuln-sig-pill">localhost</span>
-            <span class="vuln-sig-pill">127.0.0.1</span>
-            <span class="vuln-sig-pill">file://</span>
-            <span class="vuln-sig-pill">dict://</span>
-            <span class="vuln-sig-pill">10.0.0.0/8</span>
-          </div>
-          <div class="vuln-fix-pill">
-            <span>🛡️</span>
-            <span><strong>Shipcheck AI Fix:</strong> Validates outgoing URLs against domain whitelists and blocks private and loopback IP ranges.</span>
+          <div style="font-size: 0.8rem; color: #a7f3d0; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+            ✔ Outbound URL scheme validation • Whitelist domain filtering • Loopback blocking
           </div>
         </div>
 
-        <!-- 6. Secrets & Weak Crypto -->
-        <div class="vuln-spec-card">
-          <div class="vuln-spec-header">
-            <div class="vuln-spec-title">
+        <!-- Shield 2: Secret & Credential Leaks -->
+        <div class="infra-shield-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 1.15rem; font-weight: 700;">
               <span>🔑</span>
-              <span>Hardcoded Secrets &amp; Auth Bypass</span>
+              <span>High-Entropy Secrets &amp; Auth Hardening</span>
             </div>
             <span class="tag-badge tag-danger">CWE-798 • Critical</span>
           </div>
-          <p style="color: var(--text-muted); font-size: 0.88rem;">
-            Identifies leaked private keys, JWT secrets, database connection URIs, and weak cryptographic algorithms.
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+            Audits and flags hardcoded AWS access keys, GitHub personal tokens, Stripe API keys, JWT secrets, and plaintext database URIs. Suggests automatic migration to environment variables and vault configs.
           </p>
-          <div class="vuln-blocked-pills">
-            <span class="vuln-sig-pill">Hardcoded API Keys</span>
-            <span class="vuln-sig-pill">JWT Secret Constants</span>
-            <span class="vuln-sig-pill">DB Password URIs</span>
-            <span class="vuln-sig-pill">MD5 / SHA1 Hash</span>
-            <span class="vuln-sig-pill">Wildcard CORS *</span>
-            <span class="vuln-sig-pill">Missing HSTS</span>
+          <div style="font-size: 0.8rem; color: #a7f3d0; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+            ✔ Zero-credential codebases • Automated .env isolation • Strong bcrypt hashing
           </div>
-          <div class="vuln-fix-pill">
-            <span>🛡️</span>
-            <span><strong>Shipcheck AI Fix:</strong> Automatically migrates credentials to .env / Pydantic settings, enforces bcrypt, and configures strict CORS origins.</span>
+        </div>
+
+        <!-- Shield 3: CORS & Missing Headers -->
+        <div class="infra-shield-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 1.15rem; font-weight: 700;">
+              <span>⚙️</span>
+              <span>Insecure CORS &amp; Security Headers</span>
+            </div>
+            <span class="tag-badge" style="background: rgba(251, 146, 60, 0.15); color: #fed7aa; border: 1px solid rgba(251, 146, 60, 0.3);">CWE-942 • Medium</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+            Prevents dangerous wildcard CORS policies (<code>Access-Control-Allow-Origin: *</code> with credentials) that expose APIs to cross-origin data theft. Configures strict HSTS, CSP, and X-Frame-Options headers.
+          </p>
+          <div style="font-size: 0.8rem; color: #a7f3d0; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+            ✔ Specific origin whitelisting • Strict transport security • Clickjacking prevention
+          </div>
+        </div>
+
+        <!-- Shield 4: Dependency Vulnerabilities -->
+        <div class="infra-shield-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 1.15rem; font-weight: 700;">
+              <span>📦</span>
+              <span>Dependency Vulnerability (CVE) Scanning</span>
+            </div>
+            <span class="tag-badge tag-danger">CWE-1395 • High</span>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+            Audits your <code>requirements.txt</code>, <code>Pipfile</code>, and <code>package.json</code> for known vulnerable versions against the National Vulnerability Database (NVD) without uploading your repo to third-party services.
+          </p>
+          <div style="font-size: 0.8rem; color: #a7f3d0; background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-subtle);">
+            ✔ Offline vulnerability matching • Remediation upgrade version recommendations
           </div>
         </div>
       </div>
