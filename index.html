@@ -1152,6 +1152,137 @@ h1, h2, h3, h4 {
   }
 }
 
+/* ==========================================================================
+   Problem Lead Opening Presentation Section
+   ========================================================================== */
+.problem-lead-section {
+  padding: 60px 0 80px;
+  position: relative;
+  border-bottom: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, rgba(10, 14, 24, 0.6) 0%, rgba(6, 8, 13, 0.95) 100%);
+}
+
+.problem-hero-wrap {
+  text-align: center;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.problem-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(244, 63, 94, 0.1);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fb7185;
+  letter-spacing: 0.04em;
+  margin-bottom: 22px;
+}
+
+.problem-lead-title {
+  font-size: 3.2rem;
+  line-height: 1.12;
+  margin-bottom: 20px;
+}
+
+.problem-lead-desc {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  max-width: 780px;
+  margin: 0 auto 46px;
+  line-height: 1.65;
+}
+
+.problem-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  text-align: left;
+  margin-bottom: 46px;
+}
+
+.problem-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(244, 63, 94, 0.2);
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  position: relative;
+  transition: var(--transition-smooth);
+}
+
+.problem-card:hover {
+  border-color: rgba(244, 63, 94, 0.45);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 20px rgba(244, 63, 94, 0.08);
+}
+
+.problem-num {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.06);
+}
+
+.problem-icon-wrap {
+  font-size: 1.8rem;
+  margin-bottom: 14px;
+}
+
+.problem-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.problem-card p {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.problem-solution-bridge {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(0, 240, 255, 0.1) 100%);
+  border: 1px solid var(--border-emerald);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px;
+  text-align: center;
+  box-shadow: 0 0 35px rgba(16, 185, 129, 0.12);
+}
+
+.bridge-tag {
+  display: inline-block;
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--accent-emerald);
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+}
+
+.bridge-text {
+  font-size: 1.18rem;
+  color: var(--text-main);
+  max-width: 820px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+@media (max-width: 992px) {
+  .problem-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .problem-lead-title {
+    font-size: 2.4rem;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1177,6 +1308,7 @@ h1, h2, h3, h4 {
       </a>
 
       <nav class="nav-links">
+        <a href="#why-needed">Why Needed?</a>
         <a href="#pitch-story">Pitch</a>
         <a href="#screenshots">Screenshots</a>
         <a href="#blocked-vulnerabilities">Blocked Vulns</a>
@@ -1201,6 +1333,70 @@ h1, h2, h3, h4 {
 
   <!-- Hero Presentation Slide -->
   <main>
+
+    <!-- 1. The Opening Pitch: The User Problem — Why Shipcheck is Needed -->
+    <section class="problem-lead-section" id="why-needed">
+      <div class="container">
+        <div class="problem-hero-wrap">
+          <div class="problem-badge">
+            <span class="pulse-dot" style="background:#f43f5e; box-shadow: 0 0 10px #f43f5e;"></span>
+            <span>THE DEVELOPER DILEMMA • WHY SHIPCHECK IS NEEDED</span>
+          </div>
+
+          <h2 class="problem-lead-title">
+            Developers Want to <span class="emerald-gradient-text">Ship Fast</span>.<br>
+            Security Tools Create <span style="color: #fb7185;">Friction, Noise &amp; $40K Bills</span>.
+          </h2>
+
+          <p class="problem-lead-desc">
+            Every day, developers push code to production hoping nothing breaks. But current application security tools are fundamentally broken for modern engineering teams:
+          </p>
+
+          <div class="problem-cards-grid">
+            <div class="problem-card">
+              <div class="problem-num">01</div>
+              <div class="problem-icon-wrap">🚨</div>
+              <h3>Hundreds of Alerts, Zero Actionable Fixes</h3>
+              <p>Traditional SAST scanners dump 400+ theoretical warnings with academic CVE links. Developers burn 40% of their sprints guessing how to write manual patches without breaking business logic.</p>
+            </div>
+
+            <div class="problem-card">
+              <div class="problem-num">02</div>
+              <div class="problem-icon-wrap">💸</div>
+              <h3>The $25,000+ Enterprise Paywall</h3>
+              <p>Leading commercial security tools (Snyk, Veracode, Datadog RASP) charge exorbitant per-seat subscriptions. Startups, students, indie hackers, and small teams are priced out of enterprise defense.</p>
+            </div>
+
+            <div class="problem-card">
+              <div class="problem-num">03</div>
+              <div class="problem-icon-wrap">🌐</div>
+              <h3>Static Scanners Don't Stop Live Attacks</h3>
+              <p>Code that passes CI can still be exploited in production. If a zero-day or edge case bypasses the linter, existing tools provide zero runtime self-defense to drop payloads before code execution.</p>
+            </div>
+
+            <div class="problem-card">
+              <div class="problem-num">04</div>
+              <div class="problem-icon-wrap">🔒</div>
+              <h3>Cloud Source Code Privacy Leaks</h3>
+              <p>Uploading proprietary repos, architecture, and environment tokens to 3rd-party SaaS clouds triggers compliance roadblocks and exposes sensitive intellectual property to supply chain leaks.</p>
+            </div>
+          </div>
+
+          <!-- The Bridge to Solution -->
+          <div class="problem-solution-bridge">
+            <div class="bridge-tag">THE SHIPCHECK SOLUTION</div>
+            <div class="bridge-text">
+              We built <strong>Shipcheck</strong> to solve this: An <strong>autonomous, 100% free &amp; open-source platform</strong> that audits source code locally, <strong>synthesizes drop-in AI patches</strong>, and deploys a <strong>sub-millisecond native C++ Sentinel RASP shield</strong> with zero code instrumentation.
+            </div>
+            <a href="#hero" class="btn btn-primary" style="margin-top: 20px;">
+              <span>Explore the Solution &amp; Live Demo</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="hero" id="hero">
       <div class="container hero-content">
         <div class="hero-left">
@@ -1966,7 +2162,8 @@ h1, h2, h3, h4 {
         </div>
 
         <div class="footer-links">
-          <a href="#pitch-story">Pitch</a>
+          <a href="#why-needed">Why Needed?</a>
+        <a href="#pitch-story">Pitch</a>
           <a href="#screenshots">Screenshots</a>
           <a href="#blocked-vulnerabilities">Blocked Vulns</a>
         <a href="#titans-comparison">Comparison</a>
