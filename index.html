@@ -1,362 +1,533 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Northstar Vulnerable Security Lab — Standalone UI</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipcheck — Pre-Deployment Security Audit & Sentinel C++ RASP Platform</title>
+  <meta name="description" content="Shipcheck autonomously audits code for critical vulnerabilities, synthesizes verified fixes with AI, and enforces zero-overhead C++ Hyperion RASP runtime protection.">
+  <meta name="keywords" content="Security, RASP, Static Analysis, Vulnerability Remediation, WAF, Hyperion, C++, Gemini AI">
+
+  <!-- OpenGraph -->
+  <meta property="og:title" content="Shipcheck — Pre-Deployment Security Audit & Sentinel RASP">
+  <meta property="og:description" content="Instant static vulnerability scanning, AI-powered code remediation, and sub-millisecond C++ Hyperion runtime defense.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <div class="cyber-grid-overlay"></div>
 
-  <!-- Top Navbar -->
-  <header>
-    <div class="brand">
-      <span class="brand-badge">VulnLab</span>
-      <span class="brand-title">Northstar Security Lab</span>
-    </div>
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <span>Shipcheck</span>
+      </a>
 
-    <div class="api-bar">
-      <span class="api-label">Backend API:</span>
-      <div class="api-input-wrap">
-        <input type="text" id="apiUrlInput" class="api-input" value="http://localhost:8001" placeholder="http://localhost:8001" title="API Endpoint URL (Configured in config.json or overridden here)">
-        <button class="btn btn-secondary btn-sm" onclick="checkApiHealth()" title="Refresh connection check">Ping</button>
-        <button class="btn btn-secondary btn-sm" onclick="resetApiUrlToConfig()" title="Reset to config.json value">Reset</button>
-      </div>
-      <div id="statusPill" class="status-pill">
-        <span class="status-dot"></span>
-        <span id="statusText">Checking...</span>
-        <span id="statusLatency" style="font-family: monospace; font-size: 0.75rem;"></span>
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#playground">Interactive Fixes</a>
+        <a href="#architecture">Architecture</a>
+        <a href="#comparison">Comparison</a>
+        <a href="#downloads">Downloads</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="#downloads" class="btn btn-primary" id="nav-download-cta">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Download v1.0.0</span>
+        </a>
       </div>
     </div>
   </header>
 
-  <!-- Main Container -->
-  <main class="container">
-
-    <!-- Top Banner -->
-    <div class="banner">
-      <div class="banner-text">
-        <h3>🛡️ Target Vulnerability Playground (Decoupled UI)</h3>
-        <p>This frontend connects to your backend exclusively via HTTP API. Quick presets below:</p>
-      </div>
-      <div class="preset-btns">
-        <button class="btn btn-secondary btn-sm preset-btn" data-url="http://localhost:8001">Direct Backend (:8001)</button>
-        <button class="btn btn-secondary btn-sm preset-btn" data-url="http://localhost:11515/api/proxy/vulnerable-lab">Shipcheck Sentinel WAF (:11515)</button>
-      </div>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <nav class="tabs">
-      <button class="tab-btn active" data-tab="tab-sqli">💉 SQL Injection</button>
-      <button class="tab-btn" data-tab="tab-xss">⚡ Cross-Site Scripting</button>
-      <button class="tab-btn" data-tab="tab-rce">💻 Command Injection</button>
-      <button class="tab-btn" data-tab="tab-ssrf">🌐 SSRF & Exfiltration</button>
-      <button class="tab-btn" data-tab="tab-explorer">🛠️ Raw API Explorer</button>
-      <button class="tab-btn" data-tab="tab-deploy">🚀 GitHub Pages Setup</button>
-    </nav>
-
-    <!-- TAB 1: SQL INJECTION -->
-    <div id="tab-sqli" class="tab-content active">
-      <div class="grid-2">
-        <!-- Login SQLi -->
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">Authentication Bypass (SQLi)</h2>
-              <p class="card-subtitle">Endpoint: <code>GET /api/login</code></p>
-            </div>
-            <span class="vuln-tag tag-sqli">SQL Injection</span>
+  <!-- Hero Section -->
+  <main>
+    <section class="hero">
+      <div class="container hero-content">
+        <div class="hero-left">
+          <div class="hero-pill">
+            <span class="pulse-dot"></span>
+            <span>Sentinel C++ Hyperion Engine 2.4 • Gemini AI Enabled</span>
           </div>
 
-          <div class="form-group">
-            <label for="sqliUser">Username</label>
-            <input type="text" id="sqliUser" class="form-control" value="Ajay">
-          </div>
+          <h1 class="hero-title">
+            Pre-Deployment Security &amp; <span class="gradient-text">Sentinel C++ RASP</span>
+          </h1>
 
-          <div class="form-group">
-            <label for="sqliPass">Password</label>
-            <input type="text" id="sqliPass" class="form-control" value="ajay123">
-          </div>
-
-          <div class="payload-box">
-            <div class="payload-title">1-Click Attack Payloads:</div>
-            <div class="payload-chips">
-              <span class="payload-chip" data-target="sqliUser" data-payload="Ajay'--" data-action="sqli-login">Ajay'--</span>
-              <span class="payload-chip" data-target="sqliUser" data-payload="' OR '1'='1" data-action="sqli-login">' OR '1'='1</span>
-              <span class="payload-chip" data-target="sqliUser" data-payload="' OR 1=1--" data-action="sqli-login">' OR 1=1--</span>
-              <span class="payload-chip" data-target="sqliUser" data-payload="' UNION SELECT 'hacked','admin'--" data-action="sqli-login">UNION SELECT 'hacked'--</span>
-            </div>
-          </div>
-
-          <button class="btn" onclick="testSqliLogin()">Send Login Request</button>
-
-          <div class="output-wrap">
-            <div class="output-header">
-              <span>Server Response</span>
-            </div>
-            <pre id="sqliLoginOut" class="output-code">// Click 'Send Login Request' to execute</pre>
-          </div>
-        </section>
-
-        <!-- Search SQLi -->
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">Document Search Exfiltration</h2>
-              <p class="card-subtitle">Endpoint: <code>GET /lab/sql-search</code></p>
-            </div>
-            <span class="vuln-tag tag-sqli">UNION / Dump</span>
-          </div>
-
-          <div class="form-group">
-            <label for="sqliSearchQuery">Search Query (Unescaped LIKE)</label>
-            <input type="text" id="sqliSearchQuery" class="form-control" value="demo">
-          </div>
-
-          <div class="payload-box">
-            <div class="payload-title">1-Click Attack Payloads:</div>
-            <div class="payload-chips">
-              <span class="payload-chip" data-target="sqliSearchQuery" data-payload="' OR 1=1--" data-action="sqli-search">' OR 1=1--</span>
-              <span class="payload-chip" data-target="sqliSearchQuery" data-payload="' UNION SELECT id, username, password FROM users--" data-action="sqli-search">Dump Users Table</span>
-              <span class="payload-chip" data-target="sqliSearchQuery" data-payload="' UNION SELECT 1, sql, tbl_name FROM sqlite_master--" data-action="sqli-search">Dump SQLite Schema</span>
-            </div>
-          </div>
-
-          <button class="btn" onclick="testSqliSearch()">Execute SQL Search</button>
-
-          <div class="output-wrap">
-            <div class="output-header">
-              <span>Query Results</span>
-            </div>
-            <pre id="sqliSearchOut" class="output-code">// Search results and executed SQL will display here</pre>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <!-- TAB 2: XSS -->
-    <div id="tab-xss" class="tab-content">
-      <div class="grid-2">
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">Reflected Cross-Site Scripting</h2>
-              <p class="card-subtitle">Endpoint: <code>GET /lab/xss-preview</code></p>
-            </div>
-            <span class="vuln-tag tag-xss">Reflected XSS</span>
-          </div>
-
-          <div class="form-group">
-            <label for="xssInput">Comment / HTML Input</label>
-            <textarea id="xssInput" class="form-control" rows="3">&lt;script&gt;alert('XSS execution!')&lt;/script&gt;</textarea>
-          </div>
-
-          <div class="payload-box">
-            <div class="payload-title">1-Click XSS Payloads:</div>
-            <div class="payload-chips">
-              <span class="payload-chip" data-target="xssInput" data-payload="<script>alert(document.domain)</script>" data-action="xss">&lt;script&gt;alert(domain)&lt;/script&gt;</span>
-              <span class="payload-chip" data-target="xssInput" data-payload="<img src=x onerror=alert('Image-XSS')>" data-action="xss">&lt;img onerror=alert()&gt;</span>
-              <span class="payload-chip" data-target="xssInput" data-payload="<svg onload=alert(1)>" data-action="xss">&lt;svg onload=alert(1)&gt;</span>
-              <span class="payload-chip" data-target="xssInput" data-payload="<a href='javascript:alert(1)'>Click Me</a>" data-action="xss">javascript: pseudo-protocol</span>
-            </div>
-          </div>
-
-          <button class="btn" onclick="testXss()">Render Preview in Frame</button>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">Sandboxed Preview Frame</h2>
-              <p class="card-subtitle">Live rendered response from server</p>
-            </div>
-          </div>
-
-          <iframe id="xssFrame" class="output-frame" title="XSS Sandbox Preview"></iframe>
-        </section>
-      </div>
-    </div>
-
-    <!-- TAB 3: COMMAND INJECTION -->
-    <div id="tab-rce" class="tab-content">
-      <div class="grid-2">
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">OS Command Injection (RCE)</h2>
-              <p class="card-subtitle">Endpoint: <code>GET /api/diagnostics</code></p>
-            </div>
-            <span class="vuln-tag tag-rce">Remote Code Exec</span>
-          </div>
-
-          <div class="form-group">
-            <label for="diagTarget">Ping / Hostname Target</label>
-            <input type="text" id="diagTarget" class="form-control" value="127.0.0.1">
-          </div>
-
-          <div class="payload-box">
-            <div class="payload-title">1-Click Command Chaining Payloads:</div>
-            <div class="payload-chips">
-              <span class="payload-chip" data-target="diagTarget" data-payload="127.0.0.1 & whoami" data-action="diag">127.0.0.1 & whoami</span>
-              <span class="payload-chip" data-target="diagTarget" data-payload="127.0.0.1 & dir" data-action="diag">127.0.0.1 & dir</span>
-              <span class="payload-chip" data-target="diagTarget" data-payload="127.0.0.1 | netstat -an" data-action="diag">127.0.0.1 | netstat</span>
-              <span class="payload-chip" data-target="diagTarget" data-payload="127.0.0.1; id" data-action="diag">127.0.0.1; id (Linux)</span>
-            </div>
-          </div>
-
-          <button class="btn" onclick="testDiagnostics()">Execute Remote Diagnostic</button>
-        </section>
-
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">Process Execution Output</h2>
-              <p class="card-subtitle">Raw stdout/stderr from backend host</p>
-            </div>
-          </div>
-
-          <div class="output-wrap">
-            <pre id="diagOut" class="output-code" style="max-height: 320px;">// Output will display after execution</pre>
-          </div>
-        </section>
-      </div>
-    </div>
-
-    <!-- TAB 4: SSRF & EXFILTRATION -->
-    <div id="tab-ssrf" class="tab-content">
-      <div class="grid-2">
-        <section class="card">
-          <div class="card-header">
-            <div>
-              <h2 class="card-title">Outbound Data Exfiltration Cases</h2>
-              <p class="card-subtitle">Endpoints: <code>POST /cases/*</code></p>
-            </div>
-            <span class="vuln-tag tag-ssrf">SSRF / Exfiltration</span>
-          </div>
-
-          <p style="font-size: 0.9rem; color: var(--text-secondary);">
-            Test how runtime protection catches sensitive outbound tokens and exfiltration attempts vs unprotected baseline.
+          <p class="hero-description">
+            Audit vulnerabilities before you ship. Shipcheck combines deep static analysis, automated AI remediation synthesis, and a transparent, sub-millisecond C++ RASP proxy to block zero-day exploits in real-time.
           </p>
 
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <button class="btn btn-secondary" onclick="testCase('secret-untrusted')" style="justify-content: flex-start;">
-              🚨 Case 1: Send Credentials to Untrusted Destination (POST /cases/secret-untrusted)
+          <div class="hero-cta-group">
+            <a href="./downloads/Shipcheck-v1.0.0-windows-x64.exe" class="btn btn-primary btn-lg" id="hero-win-dl" download>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.951-1.801"/>
+              </svg>
+              <div>
+                <span>Download for Windows</span>
+                <span class="btn-subtext">Standalone .EXE (37 MB)</span>
+              </div>
+            </a>
+
+            <a href="./downloads/shipcheck_1.0.0_amd64.deb" class="btn btn-emerald btn-lg" id="hero-linux-dl" download>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.504 0C5.6 0 0 5.6 0 12.504c0 4.195 2.067 7.915 5.234 10.218.067-.099.141-.194.223-.284.773-.852 1.637-1.637 2.457-2.392.201-.184.402-.37.6-.557.067-.066.13-.136.192-.207.037-.043.073-.086.108-.13.313-.39.585-.824.81-1.293.033-.069.066-.139.097-.209.022-.05.043-.1.063-.15.228-.55.372-1.134.425-1.741.011-.122.017-.245.017-.369 0-.46-.075-.905-.213-1.328a4.912 4.912 0 0 0-.583-1.198 5.617 5.617 0 0 0-.495-.623c-.116-.123-.239-.238-.369-.344-.326-.264-.696-.475-1.096-.622a4.34 4.34 0 0 0-1.547-.282c-.287 0-.568.034-.84.098a3.61 3.61 0 0 0-.792.302c-.247.135-.473.303-.671.501-.137.137-.256.29-.356.456-.051.084-.096.173-.135.264a2.915 2.915 0 0 0-.154.515 3.327 3.327 0 0 0-.044.538c0 .247.033.487.096.716.064.228.16.442.285.637.062.097.135.188.217.271.082.083.174.156.271.218.196.124.41.22.637.284.229.064.469.097.716.097.359 0 .702-.07 1.019-.203.317-.134.6-.33.837-.58.238-.25.424-.548.547-.878.124-.33.187-.687.187-1.06 0-.568-.135-1.1-.393-1.57-.259-.47-.624-.863-1.07-1.157a4.417 4.417 0 0 0-1.503-.574 6.786 6.786 0 0 0-1.748-.096c-.613.064-1.2.238-1.734.512a6.34 6.34 0 0 0-1.517 1.139c-.44.444-.796.963-1.05 1.533-.254.571-.383 1.19-.383 1.836 0 .848.215 1.66.627 2.404.412.744.992 1.378 1.704 1.868.711.49 1.54.836 2.443 1.018.903.182 1.838.208 2.76.078a10.875 10.875 0 0 0 2.65-.838 12.448 12.448 0 0 0 2.378-1.558c.725-.615 1.343-1.343 1.821-2.148.478-.805.81-1.696.978-2.628.168-.932.176-1.89.023-2.825a13.315 13.315 0 0 0-.693-2.394 14.15 14.15 0 0 0-1.353-2.457c-.573-.8-1.258-1.504-2.023-2.078a14.7 14.7 0 0 0-2.528-1.464 16.48 16.48 0 0 0-2.845-.889A19.467 19.467 0 0 0 12.504 0z"/>
+              </svg>
+              <div>
+                <span>Download for Linux</span>
+                <span class="btn-subtext">Debian / Ubuntu .DEB</span>
+              </div>
+            </a>
+          </div>
+
+          <div class="checksum-box" style="max-width: 580px;">
+            <span style="color: var(--accent-cyan); font-weight: 600;">QUICK RUN:</span>
+            <span class="checksum-text">git clone https://github.com/oggy-and-the-cockroaches/Hacktober.git</span>
+            <button class="copy-trigger" data-target="quick-run-code" title="Copy command" style="background:none;border:none;color:#94a3b8;cursor:pointer;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
             </button>
-            <button class="btn btn-secondary" onclick="testCase('public-untrusted')" style="justify-content: flex-start;">
-              ℹ️ Case 2: Send Public Metrics to Untrusted Destination (POST /cases/public-untrusted)
-            </button>
-            <button class="btn btn-secondary" onclick="testCase('secret-trusted')" style="justify-content: flex-start;">
-              🔒 Case 3: Send Credentials to Trusted Destination (POST /cases/secret-trusted)
-            </button>
+            <span id="quick-run-code" style="display:none;" data-copy="git clone https://github.com/oggy-and-the-cockroaches/Hacktober.git"></span>
           </div>
-        </section>
+        </div>
 
-        <section class="card">
-          <div class="card-header">
+        <!-- Telemetry Simulator Widget -->
+        <div class="hero-right">
+          <div class="telemetry-card">
+            <div class="telemetry-header">
+              <div class="status-badge">
+                <span class="pulse-dot"></span>
+                <span>Hyperion Shield Active</span>
+              </div>
+              <span style="font-family: var(--font-code); font-size: 0.78rem; color: var(--accent-cyan);">PORT: 8000</span>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-box">
+                <div class="metric-val emerald-gradient-text" id="stat-zeroday">100%</div>
+                <div class="metric-label">RASP Attack Block Rate</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-val gradient-text">0.42 ms</div>
+                <div class="metric-label">C++ Inspection Latency</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-val" style="color: #38bdf8;">0</div>
+                <div class="metric-label">Runtime False Positives</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-val" style="color: #a78bfa;">AI Synced</div>
+                <div class="metric-label">Auto-Patch Engine</div>
+              </div>
+            </div>
+
+            <div class="terminal-snippet">
+              <div class="terminal-line">
+                <span class="terminal-prefix">[RASP]</span>
+                <span>Intercepted POST /api/login</span>
+              </div>
+              <div class="terminal-line">
+                <span class="terminal-prefix">[WAF]</span>
+                <span style="color: #f43f5e;">SQLi Detected: "' OR 1=1--" (Pattern matched)</span>
+              </div>
+              <div class="terminal-line">
+                <span class="terminal-prefix">[ACTION]</span>
+                <span style="color: #34d399;">Blocked (HTTP 403 Forbidden) in 0.31ms</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Capabilities Section -->
+    <section class="container" id="features" style="padding: 90px 0;">
+      <div class="section-header">
+        <span class="section-pill">ENTERPRISE SECURITY CAPABILITIES</span>
+        <h2 class="section-title">Zero Security Debt, from Commit to Cloud</h2>
+        <p class="section-subtitle">
+          Shipcheck bridges the gap between static triage and production runtime self-defense with bleeding-edge C++ native performance.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrap icon-cyan">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+          <h3>Native C++ Hyperion WAF</h3>
+          <p>
+            Compiled native inspection engine executes SIMD-accelerated pattern scanning for SQL Injection, XSS, and Remote Code Execution at sub-millisecond latencies.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap icon-purple">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <h3>Gemini AI Fix Synthesizer</h3>
+          <p>
+            Skip generic advice. Shipcheck generates contextual, production-ready remediation code (parameterized queries, bcrypt hashing, sanitized inputs) ready to paste or apply.
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrap icon-emerald">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <h3>Zero-Code RASP Proxy</h3>
+          <p>
+            Route incoming traffic through Shipcheck's reverse proxy. Get live threat dashboards, automatic request dropping, and granular security scoring without modifying your codebase.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive AI Remediation Playground (Static Demo) -->
+    <section class="playground-section" id="playground">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-pill">LIVE CODE PLAYGROUND</span>
+          <h2 class="section-title">See Shipcheck AI Remediation in Action</h2>
+          <p class="section-subtitle">
+            Explore how Shipcheck autonomously transforms high-severity security vulnerabilities into hardened, production-ready code.
+          </p>
+        </div>
+
+        <div class="playground-container">
+          <div class="playground-nav">
+            <div class="vuln-selector-tabs">
+              <button class="vuln-tab active" data-vuln="sqli">💉 SQL Injection</button>
+              <button class="vuln-tab" data-vuln="secrets">🔑 Hardcoded Password</button>
+              <button class="vuln-tab" data-vuln="xss">🛡️ Stored XSS</button>
+              <button class="vuln-tab" data-vuln="rce">⚡ Command Injection (RCE)</button>
+            </div>
             <div>
-              <h2 class="card-title">Exfiltration Simulation Output</h2>
-              <p class="card-subtitle">Case runner results</p>
+              <span id="vuln-cwe-badge" class="tag-badge tag-danger">CWE-89: SQL Injection</span>
             </div>
           </div>
 
-          <div class="output-wrap">
-            <pre id="caseOut" class="output-code" style="max-height: 280px;">// Case execution response will display here</pre>
+          <div class="playground-body">
+            <!-- Left: Vulnerable Code -->
+            <div class="code-col col-before">
+              <div class="code-header">
+                <span class="tag-badge tag-danger">Vulnerable Source (Detected)</span>
+                <span style="font-family: var(--font-code); font-size: 0.78rem; color: #fb7185;">Severity: Critical</span>
+              </div>
+              <pre class="code-pre" id="code-before-view">// Loading vulnerable code...</pre>
+            </div>
+
+            <!-- Right: AI Synthesized Fix -->
+            <div class="code-col col-after">
+              <div class="code-header">
+                <span class="tag-badge tag-success">Shipcheck AI Synthesized Patch</span>
+                <span style="font-family: var(--font-code); font-size: 0.78rem; color: #34d399;" id="vuln-score-delta">+53 Security Score</span>
+              </div>
+              <pre class="code-pre" id="code-after-view">// Loading AI remediated code...</pre>
+            </div>
           </div>
-        </section>
-      </div>
-    </div>
 
-    <!-- TAB 5: RAW API EXPLORER -->
-    <div id="tab-explorer" class="tab-content">
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">Interactive API Explorer</h2>
-            <p class="card-subtitle">Send arbitrary requests directly to the configured backend API</p>
+          <div class="playground-footer">
+            <div>
+              <strong>Root Cause &amp; Remediation:</strong>
+              <span id="vuln-explanation-text" style="margin-left: 8px;">Analyzing vulnerability root cause...</span>
+            </div>
+            <a href="#downloads" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.85rem;">Try in Your App &rarr;</a>
           </div>
-        </div>
-
-        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-          <select id="customMethod" class="form-control" style="width: 120px; font-weight: bold;">
-            <option value="GET">GET</option>
-            <option value="POST">POST</option>
-            <option value="PUT">PUT</option>
-            <option value="DELETE">DELETE</option>
-            <option value="HEAD">HEAD</option>
-          </select>
-          <input type="text" id="customPath" class="form-control" style="flex: 1; min-width: 250px;" value="/api/health" placeholder="/api/health, /items, /cases">
-          <button class="btn" onclick="executeCustomRequest()">Send Request</button>
-        </div>
-
-        <div class="form-group">
-          <label for="customBody">Request Body (JSON for POST/PUT)</label>
-          <textarea id="customBody" class="form-control" rows="3" placeholder='{"username": "admin", "password": "password"}'></textarea>
-        </div>
-
-        <div class="output-wrap">
-          <div class="output-header">
-            <span>Response Inspector</span>
-          </div>
-          <pre id="customOut" class="output-code" style="max-height: 300px;">// Response will display here</pre>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- TAB 6: GITHUB PAGES DEPLOYMENT -->
-    <div id="tab-deploy" class="tab-content">
-      <div class="card">
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">🚀 How to Publish This Frontend to GitHub Pages</h2>
-            <p class="card-subtitle">Completely decoupled static deployment instructions</p>
+    <!-- Terminal Simulator Section -->
+    <section class="container" id="terminal-demo" style="padding: 90px 0;">
+      <div class="section-header">
+        <span class="section-pill">DEVELOPER-FIRST CLI</span>
+        <h2 class="section-title">Built for Terminal Enthusiasts &amp; CI/CD</h2>
+        <p class="section-subtitle">
+          Execute full-suite security audits from your command prompt or embed Shipcheck into your GitHub Actions pipeline.
+        </p>
+      </div>
+
+      <div class="terminal-block">
+        <div class="term-topbar">
+          <div class="term-dots">
+            <span class="term-dot dot-red"></span>
+            <span class="term-dot dot-yellow"></span>
+            <span class="term-dot dot-green"></span>
+          </div>
+          <div class="term-nav">
+            <button class="term-tab active" data-tab="cli">shipcheck</button>
+            <button class="term-tab" data-tab="curl">attack-test.sh</button>
+            <button class="term-tab" data-tab="install">install.sh</button>
+          </div>
+          <span style="font-family: var(--font-code); font-size: 0.75rem; color: var(--text-subtle);">bash / powershell</span>
+        </div>
+
+        <div class="term-content">
+          <!-- Tab 1: shipcheck CLI -->
+          <div class="term-snippet-view" id="term-cli">
+            <div style="color: #38bdf8;">$ shipcheck</div>
+            <div style="color: #64748b;">========================================================================</div>
+            <div style="color: #38bdf8; font-weight: bold;">   ____ _     _             _               _ </div>
+            <div style="color: #38bdf8; font-weight: bold;">  / ___| |__ (_)_ __   ___| |__   ___  ___| | __</div>
+            <div style="color: #38bdf8; font-weight: bold;">  \___ \| '_ \| | '_ \ / __| '_ \ / _ \/ __| |/ /</div>
+            <div style="color: #38bdf8; font-weight: bold;">   ___) | | | | | |_) | (__| | | |  __/ (__|   &lt; </div>
+            <div style="color: #38bdf8; font-weight: bold;">  |____/|_| |_|_| .__/ \___|_| |_|\___|\___|_|\_\</div>
+            <div style="color: #64748b;">========================================================================</div>
+            <div style="color: #34d399;">   ⚡ Shipcheck Server active on: http://127.0.0.1:8000</div>
+            <div style="color: #34d399;">   🌐 Opening dashboard in browser (Chrome)...</div>
+            <div style="color: #a7f3d0;">INFO:     Uvicorn running on http://127.0.0.1:8000 [OK]</div>
+          </div>
+
+          <!-- Tab 2: Attack simulation -->
+          <div class="term-snippet-view" id="term-curl" style="display: none;">
+            <div style="color: #38bdf8;">$ curl -i -X POST http://127.0.0.1:8000/proxy/login -d "user=admin' OR 1=1--"</div>
+            <div style="color: #64748b;">HTTP/1.1 403 Forbidden</div>
+            <div style="color: #f43f5e; font-weight: bold;">X-Sentinel-Block: HYPERION_SQLI_RULE_04</div>
+            <div style="color: #a78bfa;">X-Inspection-Duration: 0.31ms</div>
+            <div style="color: #64748b;">Content-Type: application/json</div>
+            <div style="color: #cbd5e1; margin-top: 8px;">{"error":"Attack blocked by Shipcheck Sentinel Hyperion RASP","category":"SQL_INJECTION"}</div>
+          </div>
+
+          <!-- Tab 3: Install -->
+          <div class="term-snippet-view" id="term-install" style="display: none;">
+            <div style="color: #38bdf8;"># On Ubuntu / Debian:</div>
+            <div style="color: #cbd5e1;">$ sudo dpkg -i shipcheck_1.0.0_amd64.deb</div>
+            <div style="color: #34d399;">[OK] Setting up shipcheck (1.0.0) ...</div>
+            <div style="color: #cbd5e1;">$ shipcheck</div>
+            <div style="color: #38bdf8; margin-top: 10px;"># On Windows (PowerShell):</div>
+            <div style="color: #cbd5e1;">.\Shipcheck-v1.0.0-windows-x64.exe</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison Table -->
+    <section class="container" id="comparison" style="padding: 80px 0;">
+      <div class="section-header">
+        <span class="section-pill">HOW WE COMPARE</span>
+        <h2 class="section-title">Why Developers Choose Shipcheck</h2>
+        <p class="section-subtitle">Modern security built for speed, accuracy, and developer autonomy.</p>
+      </div>
+
+      <div class="comparison-table-wrap">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="hl">Shipcheck</th>
+              <th>Legacy SAST Tools</th>
+              <th>Cloud WAFs</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Inspection Latency</strong></td>
+              <td class="hl">&lt; 0.5 ms (Native C++)</td>
+              <td>Minutes / Hours in CI</td>
+              <td>15 - 80 ms (Cloud roundtrip)</td>
+            </tr>
+            <tr>
+              <td><strong>AI Fix Synthesis</strong></td>
+              <td class="hl">✅ Contextual code diffs &amp; bcrypt/SQL</td>
+              <td>❌ Generic documentation links</td>
+              <td>❌ No code visibility</td>
+            </tr>
+            <tr>
+              <td><strong>Runtime Self-Protection</strong></td>
+              <td class="hl">✅ Built-in transparent RASP proxy</td>
+              <td>❌ Static only</td>
+              <td>⚠️ Lacks internal app context</td>
+            </tr>
+            <tr>
+              <td><strong>Zero Code Changes</strong></td>
+              <td class="hl">✅ Route via proxy or single CLI</td>
+              <td>⚠️ Requires build integrations</td>
+              <td>⚠️ DNS changes &amp; certificate setup</td>
+            </tr>
+            <tr>
+              <td><strong>Offline &amp; Air-Gapped Ready</strong></td>
+              <td class="hl">✅ Standalone binary &amp; local SQLite</td>
+              <td>❌ Often requires cloud uplinks</td>
+              <td>❌ Cloud-hosted only</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Downloads Section -->
+    <section class="downloads-section" id="downloads">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-pill">OFFICIAL RELEASES</span>
+          <h2 class="section-title">Download Shipcheck for Your Machine</h2>
+          <p class="section-subtitle">
+            Completely self-contained standalone packages. Zero external dependencies required.
+          </p>
+        </div>
+
+        <div class="download-cards-grid">
+          <!-- Windows Card -->
+          <div class="dl-card" id="dl-card-windows">
+            <div class="dl-badge">Windows x64</div>
+            <div class="dl-os-icon">🪟</div>
+            <h3>Shipcheck for Windows</h3>
+            <p class="dl-spec">Version 1.0.0 • Standalone Executable • 64-bit</p>
+            <a href="./downloads/Shipcheck-v1.0.0-windows-x64.exe" class="btn btn-primary dl-action-btn" download>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Download .EXE (37 MB)</span>
+            </a>
+            <div class="checksum-box">
+              <span class="checksum-text" id="win-hash" data-copy="11991F5E721AC4ED6A70F3EDFC135CC7FDA80D79E490CA01879BFEDFB262726E">SHA256: 11991F5E...262726E</span>
+              <button class="copy-trigger" data-target="win-hash" title="Copy SHA256" style="background:none;border:none;color:#94a3b8;cursor:pointer;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Linux Card -->
+          <div class="dl-card" id="dl-card-linux">
+            <div class="dl-badge">Linux Debian / Ubuntu</div>
+            <div class="dl-os-icon">🐧</div>
+            <h3>Shipcheck for Linux</h3>
+            <p class="dl-spec">Version 1.0.0 • Debian Package • amd64</p>
+            <a href="./downloads/shipcheck_1.0.0_amd64.deb" class="btn btn-emerald dl-action-btn" download>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Download .DEB (amd64)</span>
+            </a>
+            <div class="checksum-box">
+              <span class="checksum-text" id="linux-hash" data-copy="D168F45F927410CD92F589B68EBE371957A7FC76192873A957DA4F678AD621AE">SHA256: D168F45F...621AE</span>
+              <button class="copy-trigger" data-target="linux-hash" title="Copy SHA256" style="background:none;border:none;color:#94a3b8;cursor:pointer;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Accordion -->
+    <section class="container" id="faq" style="padding: 70px 0 100px;">
+      <div class="section-header">
+        <span class="section-pill">QUESTIONS &amp; ANSWERS</span>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-wrap">
+        <div class="faq-item open">
+          <button class="faq-question">
+            <span>Does Shipcheck send my source code to external servers?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            No. Shipcheck is local-first. Static AST scanning, pattern matching, SQLite storage, and the C++ Hyperion RASP proxy execute 100% locally on your machine. AI remediation can run via local models or your private Gemini API key.
           </div>
         </div>
 
-        <div style="font-size: 0.9rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 1rem; line-height: 1.6;">
-          <p>
-            Because this frontend is 100% static (HTML, Vanilla CSS, JS) and decoupled from the backend, you can publish the <code>sample_vulnerable_app/frontend/</code> directory directly to <strong>GitHub Pages</strong> or <strong>Netlify / Vercel</strong>!
-          </p>
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How does the C++ Hyperion WAF achieve &lt; 0.5ms latency?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            The Hyperion engine is compiled with SIMD optimizations and uses vectorized Boyer-Moore-Horspool and Aho-Corasick multi-pattern search in native C++, avoiding interpreter overhead.
+          </div>
+        </div>
 
-          <h3 style="color: var(--text-primary); font-size: 1rem;">1. Configure the API URL</h3>
-          <p>
-            Before or after publishing, simply edit <code>frontend/config.json</code>:
-          </p>
-          <pre class="output-code" style="min-height: auto;">{
-  "api_url": "https://your-live-backend-url.com"
-}</pre>
-          <p>
-            Anyone visiting your GitHub Pages site will automatically connect to that API endpoint. Users can also change the API URL on the fly using the input bar at the top!
-          </p>
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>How do I run the Windows executable?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            Download Shipcheck-v1.0.0-windows-x64.exe, double-click it, and it will automatically initialize the local database, start the engine on port 8000, and open the web dashboard in Chrome.
+          </div>
+        </div>
 
-          <h3 style="color: var(--text-primary); font-size: 1rem;">2. Publishing to GitHub Pages</h3>
-          <ol style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
-            <li>Push this repo or copy the <code>frontend/</code> files to a new GitHub repository (e.g. <code>vulnerable-security-lab-ui</code>).</li>
-            <li>In GitHub repo settings &rarr; <strong>Pages</strong> &rarr; Select <strong>Branch: main</strong> &rarr; <strong>Save</strong>.</li>
-            <li>Your lab frontend is live at <code>https://&lt;your-username&gt;.github.io/&lt;repo-name&gt;/</code>!</li>
-          </ol>
-
-          <h3 style="color: var(--text-primary); font-size: 1rem;">3. Running the Backend</h3>
-          <p>
-            Run the backend locally on port <code>8001</code>:
-          </p>
-          <pre class="output-code" style="min-height: auto;">cd sample_vulnerable_app/backend
-python -m uvicorn app:app --port 8001 --reload</pre>
-          <p>
-            CORS is pre-configured with <code>allow_origins=["*"]</code> so the GitHub Pages frontend can connect seamlessly to your backend or ngrok/cloud tunnel URL.
-          </p>
+        <div class="faq-item">
+          <button class="faq-question">
+            <span>Can I deploy this static website on GitHub Pages?</span>
+            <svg class="faq-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-answer">
+            Yes! This website is 100% static (HTML, CSS, JS) with relative paths. Simply push the <code>web/</code> folder to GitHub and enable GitHub Pages under your repository settings.
+          </div>
         </div>
       </div>
-    </div>
-
+    </section>
   </main>
 
-  <footer>
-    Northstar Knowledge Security Testing Lab • Decoupled Architecture • Port 8001
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="brand">
+          <div class="brand-icon" style="width: 32px; height: 32px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <span style="font-size: 1.15rem;">Shipcheck</span>
+        </div>
+
+        <div class="footer-links">
+          <a href="#features">Features</a>
+          <a href="#playground">Playground</a>
+          <a href="#downloads">Downloads</a>
+          <a href="https://github.com/oggy-and-the-cockroaches/Hacktober" target="_blank" rel="noopener">GitHub Repository</a>
+        </div>
+      </div>
+
+      <div style="text-align: center;" class="footer-copy">
+        <p>&copy; 2026 Shipcheck Security Platform. Developed for Hacktoberfest 2026. Distributed under MIT License.</p>
+      </div>
+    </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>

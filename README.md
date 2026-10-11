@@ -1,35 +1,38 @@
-# Northstar Security Lab - Decoupled Frontend
+# Shipcheck — Pre-Deployment Security Audit & Sentinel C++ RASP
 
-A standalone, modern HTML5/CSS/JavaScript web UI for the Northstar Vulnerable Security Lab.
+Official website and standalone distribution packages for **Shipcheck**.
 
-## 🌟 Key Highlights
-
-- **100% Decoupled**: Zero backend code or template rendering in the frontend.
-- **Configurable via `config.json`**: Change the backend API endpoint anytime by modifying [`config.json`](./config.json).
-- **GitHub Pages Ready**: Can be committed and hosted on GitHub Pages, Netlify, Vercel, or AWS S3 without build steps or node dependencies.
-- **Live Connection Monitor**: Displays real-time API health status and latency in milliseconds.
-- **Interactive Security Playground**: 1-click test payloads for SQL Injection, Cross-Site Scripting (XSS), Command Injection (RCE), and SSRF exfiltration.
+🌐 **Live Website**: [https://ajayhemanth.online](https://ajayhemanth.online)
 
 ---
 
-## ⚙️ Configuration
+## 📦 Download Releases
 
-Edit `config.json`:
+| Platform | Package | Architecture | Size | Checksum (SHA-256) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Windows** | [Shipcheck-v1.0.0-windows-x64.exe](./downloads/Shipcheck-v1.0.0-windows-x64.exe) | x64 | ~37 MB | `11991F5E721AC4ED6A70F3EDFC135CC7FDA80D79E490CA01879BFEDFB262726E` |
+| **Linux (Debian/Ubuntu)** | [shipcheck_1.0.0_amd64.deb](./downloads/shipcheck_1.0.0_amd64.deb) | amd64 | ~1.5 KB | `D168F45F927410CD92F589B68EBE371957A7FC76192873A957DA4F678AD621AE` |
 
-```json
-{
-  "api_url": "http://localhost:8001"
-}
+---
+
+## ⚡ Quick Start
+
+### Windows
+1. Download `Shipcheck-v1.0.0-windows-x64.exe`.
+2. Double-click the `.exe` to launch the engine and open the dashboard at `http://127.0.0.1:8000`.
+
+### Linux (Debian / Ubuntu)
+```bash
+sudo dpkg -i shipcheck_1.0.0_amd64.deb
+shipcheck
 ```
 
-When deployed to production or GitHub Pages, update `"api_url"` to your public backend URL or cloud tunnel.
-
 ---
 
-## 🚀 Deploying to GitHub Pages
+## 🛡️ Key Features
+- **Native C++ Hyperion WAF**: Sub-millisecond SIMD pattern inspection for SQLi, XSS, and command injections.
+- **AI-Powered Fix Synthesis**: Generates concrete, context-aware code diffs and patches powered by Gemini AI.
+- **Zero-Code RASP Proxy**: Transparent reverse proxy intercepting and dropping malicious payloads in real time.
+- **100% Local-First & Air-Gapped**: SQLite-backed, fully functional offline.
 
-1. Create a repository on GitHub (or use your existing repository).
-2. Push the files in `sample_vulnerable_app/frontend/` (including `index.html`, `styles.css`, `app.js`, and `config.json`).
-3. In GitHub, go to **Settings** > **Pages**.
-4. Set source to **Deploy from a branch** -> `main` / root.
-5. Your frontend is live at `https://<username>.github.io/<repo-name>/`.
+Developed for **Hacktoberfest 2026**.
