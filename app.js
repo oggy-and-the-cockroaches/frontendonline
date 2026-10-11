@@ -1,3 +1,28 @@
+
+// Global functions for direct inline click handlers
+function toggleFAQ(btn) {
+  const item = btn ? btn.closest('.faq-item') : null;
+  if (item) {
+    item.classList.toggle('open');
+  }
+}
+
+function switchTour(tourName, btn) {
+  document.querySelectorAll('.tour-tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.mockup-slide').forEach(s => s.style.display = 'none');
+  const slide = document.getElementById('slide-' + tourName);
+  if (slide) slide.style.display = 'block';
+}
+
+function switchPlayground(key, btn) {
+  document.querySelectorAll('.vuln-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (typeof updatePlayground === 'function') {
+    updatePlayground(key);
+  }
+}
+
 /**
  * Shipcheck Presentation Deck & Product Website Logic
  * 100% Client-Side — Zero Backend Needed
