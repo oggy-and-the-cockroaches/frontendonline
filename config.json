@@ -1,0 +1,6 @@
+{
+  "api_url": "http://localhost:8001",
+  "name": "Northstar Vulnerable Security Lab",
+  "description": "Standalone Frontend for testing security vulnerabilities and RASP proxy inspection.",
+  "version": "2.0.0"
+}

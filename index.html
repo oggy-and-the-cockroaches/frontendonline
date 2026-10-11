@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Northstar Vulnerable Security Lab — Standalone UI</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header>
+    <div class="brand">
+      <span class="brand-badge">VulnLab</span>
+      <span class="brand-title">Northstar Security Lab</span>
+    </div>
+
+    <div class="api-bar">
+      <span class="api-label">Backend API:</span>
+      <div class="api-input-wrap">
+        <input type="text" id="apiUrlInput" class="api-input" value="http://localhost:8001" placeholder="http://localhost:8001" title="API Endpoint URL (Configured in config.json or overridden here)">
+        <button class="btn btn-secondary btn-sm" onclick="checkApiHealth()" title="Refresh connection check">Ping</button>
+        <button class="btn btn-secondary btn-sm" onclick="resetApiUrlToConfig()" title="Reset to config.json value">Reset</button>
+      </div>
+      <div id="statusPill" class="status-pill">
+        <span class="status-dot"></span>
+        <span id="statusText">Checking...</span>
+        <span id="statusLatency" style="font-family: monospace; font-size: 0.75rem;"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Top Banner -->
+    <div class="banner">
+      <div class="banner-text">
+        <h3>🛡️ Target Vulnerability Playground (Decoupled UI)</h3>
+        <p>This frontend connects to your backend exclusively via HTTP API. Quick presets below:</p>
+      </div>
+      <div class="preset-btns">
+        <button class="btn btn-secondary btn-sm preset-btn" data-url="http://localhost:8001">Direct Backend (:8001)</button>
+        <button class="btn btn-secondary btn-sm preset-btn" data-url="http://localhost:11515/api/proxy/vulnerable-lab">Shipcheck Sentinel WAF (:11515)</button>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="tab-sqli">💉 SQL Injection</button>
+      <button class="tab-btn" data-tab="tab-xss">⚡ Cross-Site Scripting</button>
+      <button class="tab-btn" data-tab="tab-rce">💻 Command Injection</button>
+      <button class="tab-btn" data-tab="tab-ssrf">🌐 SSRF & Exfiltration</button>
+      <button class="tab-btn" data-tab="tab-explorer">🛠️ Raw API Explorer</button>
+      <button class="tab-btn" data-tab="tab-deploy">🚀 GitHub Pages Setup</button>
+    </nav>
+
+    <!-- TAB 1: SQL INJECTION -->
+    <div id="tab-sqli" class="tab-content active">
+      <div class="grid-2">
+        <!-- Login SQLi -->
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Authentication Bypass (SQLi)</h2>
+              <p class="card-subtitle">Endpoint: <code>GET /api/login</code></p>
+            </div>
+            <span class="vuln-tag tag-sqli">SQL Injection</span>
+          </div>
+
+          <div class="form-group">
+            <label for="sqliUser">Username</label>
+            <input type="text" id="sqliUser" class="form-control" value="Ajay">
+          </div>
+
+          <div class="form-group">
+            <label for="sqliPass">Password</label>
+            <input type="text" id="sqliPass" class="form-control" value="ajay123">
+          </div>
+
+          <div class="payload-box">
+            <div class="payload-title">1-Click Attack Payloads:</div>
+            <div class="payload-chips">
+              <span class="payload-chip" data-target="sqliUser" data-payload="Ajay'--" data-action="sqli-login">Ajay'--</span>
+              <span class="payload-chip" data-target="sqliUser" data-payload="' OR '1'='1" data-action="sqli-login">' OR '1'='1</span>
+              <span class="payload-chip" data-target="sqliUser" data-payload="' OR 1=1--" data-action="sqli-login">' OR 1=1--</span>
+              <span class="payload-chip" data-target="sqliUser" data-payload="' UNION SELECT 'hacked','admin'--" data-action="sqli-login">UNION SELECT 'hacked'--</span>
+            </div>
+          </div>
+
+          <button class="btn" onclick="testSqliLogin()">Send Login Request</button>
+
+          <div class="output-wrap">
+            <div class="output-header">
+              <span>Server Response</span>
+            </div>
+            <pre id="sqliLoginOut" class="output-code">// Click 'Send Login Request' to execute</pre>
+          </div>
+        </section>
+
+        <!-- Search SQLi -->
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Document Search Exfiltration</h2>
+              <p class="card-subtitle">Endpoint: <code>GET /lab/sql-search</code></p>
+            </div>
+            <span class="vuln-tag tag-sqli">UNION / Dump</span>
+          </div>
+
+          <div class="form-group">
+            <label for="sqliSearchQuery">Search Query (Unescaped LIKE)</label>
+            <input type="text" id="sqliSearchQuery" class="form-control" value="demo">
+          </div>
+
+          <div class="payload-box">
+            <div class="payload-title">1-Click Attack Payloads:</div>
+            <div class="payload-chips">
+              <span class="payload-chip" data-target="sqliSearchQuery" data-payload="' OR 1=1--" data-action="sqli-search">' OR 1=1--</span>
+              <span class="payload-chip" data-target="sqliSearchQuery" data-payload="' UNION SELECT id, username, password FROM users--" data-action="sqli-search">Dump Users Table</span>
+              <span class="payload-chip" data-target="sqliSearchQuery" data-payload="' UNION SELECT 1, sql, tbl_name FROM sqlite_master--" data-action="sqli-search">Dump SQLite Schema</span>
+            </div>
+          </div>
+
+          <button class="btn" onclick="testSqliSearch()">Execute SQL Search</button>
+
+          <div class="output-wrap">
+            <div class="output-header">
+              <span>Query Results</span>
+            </div>
+            <pre id="sqliSearchOut" class="output-code">// Search results and executed SQL will display here</pre>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- TAB 2: XSS -->
+    <div id="tab-xss" class="tab-content">
+      <div class="grid-2">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Reflected Cross-Site Scripting</h2>
+              <p class="card-subtitle">Endpoint: <code>GET /lab/xss-preview</code></p>
+            </div>
+            <span class="vuln-tag tag-xss">Reflected XSS</span>
+          </div>
+
+          <div class="form-group">
+            <label for="xssInput">Comment / HTML Input</label>
+            <textarea id="xssInput" class="form-control" rows="3">&lt;script&gt;alert('XSS execution!')&lt;/script&gt;</textarea>
+          </div>
+
+          <div class="payload-box">
+            <div class="payload-title">1-Click XSS Payloads:</div>
+            <div class="payload-chips">
+              <span class="payload-chip" data-target="xssInput" data-payload="<script>alert(document.domain)</script>" data-action="xss">&lt;script&gt;alert(domain)&lt;/script&gt;</span>
+              <span class="payload-chip" data-target="xssInput" data-payload="<img src=x onerror=alert('Image-XSS')>" data-action="xss">&lt;img onerror=alert()&gt;</span>
+              <span class="payload-chip" data-target="xssInput" data-payload="<svg onload=alert(1)>" data-action="xss">&lt;svg onload=alert(1)&gt;</span>
+              <span class="payload-chip" data-target="xssInput" data-payload="<a href='javascript:alert(1)'>Click Me</a>" data-action="xss">javascript: pseudo-protocol</span>
+            </div>
+          </div>
+
+          <button class="btn" onclick="testXss()">Render Preview in Frame</button>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Sandboxed Preview Frame</h2>
+              <p class="card-subtitle">Live rendered response from server</p>
+            </div>
+          </div>
+
+          <iframe id="xssFrame" class="output-frame" title="XSS Sandbox Preview"></iframe>
+        </section>
+      </div>
+    </div>
+
+    <!-- TAB 3: COMMAND INJECTION -->
+    <div id="tab-rce" class="tab-content">
+      <div class="grid-2">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">OS Command Injection (RCE)</h2>
+              <p class="card-subtitle">Endpoint: <code>GET /api/diagnostics</code></p>
+            </div>
+            <span class="vuln-tag tag-rce">Remote Code Exec</span>
+          </div>
+
+          <div class="form-group">
+            <label for="diagTarget">Ping / Hostname Target</label>
+            <input type="text" id="diagTarget" class="form-control" value="127.0.0.1">
+          </div>
+
+          <div class="payload-box">
+            <div class="payload-title">1-Click Command Chaining Payloads:</div>
+            <div class="payload-chips">
+              <span class="payload-chip" data-target="diagTarget" data-payload="127.0.0.1 & whoami" data-action="diag">127.0.0.1 & whoami</span>
+              <span class="payload-chip" data-target="diagTarget" data-payload="127.0.0.1 & dir" data-action="diag">127.0.0.1 & dir</span>
+              <span class="payload-chip" data-target="diagTarget" data-payload="127.0.0.1 | netstat -an" data-action="diag">127.0.0.1 | netstat</span>
+              <span class="payload-chip" data-target="diagTarget" data-payload="127.0.0.1; id" data-action="diag">127.0.0.1; id (Linux)</span>
+            </div>
+          </div>
+
+          <button class="btn" onclick="testDiagnostics()">Execute Remote Diagnostic</button>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Process Execution Output</h2>
+              <p class="card-subtitle">Raw stdout/stderr from backend host</p>
+            </div>
+          </div>
+
+          <div class="output-wrap">
+            <pre id="diagOut" class="output-code" style="max-height: 320px;">// Output will display after execution</pre>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- TAB 4: SSRF & EXFILTRATION -->
+    <div id="tab-ssrf" class="tab-content">
+      <div class="grid-2">
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Outbound Data Exfiltration Cases</h2>
+              <p class="card-subtitle">Endpoints: <code>POST /cases/*</code></p>
+            </div>
+            <span class="vuln-tag tag-ssrf">SSRF / Exfiltration</span>
+          </div>
+
+          <p style="font-size: 0.9rem; color: var(--text-secondary);">
+            Test how runtime protection catches sensitive outbound tokens and exfiltration attempts vs unprotected baseline.
+          </p>
+
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <button class="btn btn-secondary" onclick="testCase('secret-untrusted')" style="justify-content: flex-start;">
+              🚨 Case 1: Send Credentials to Untrusted Destination (POST /cases/secret-untrusted)
+            </button>
+            <button class="btn btn-secondary" onclick="testCase('public-untrusted')" style="justify-content: flex-start;">
+              ℹ️ Case 2: Send Public Metrics to Untrusted Destination (POST /cases/public-untrusted)
+            </button>
+            <button class="btn btn-secondary" onclick="testCase('secret-trusted')" style="justify-content: flex-start;">
+              🔒 Case 3: Send Credentials to Trusted Destination (POST /cases/secret-trusted)
+            </button>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Exfiltration Simulation Output</h2>
+              <p class="card-subtitle">Case runner results</p>
+            </div>
+          </div>
+
+          <div class="output-wrap">
+            <pre id="caseOut" class="output-code" style="max-height: 280px;">// Case execution response will display here</pre>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- TAB 5: RAW API EXPLORER -->
+    <div id="tab-explorer" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Interactive API Explorer</h2>
+            <p class="card-subtitle">Send arbitrary requests directly to the configured backend API</p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+          <select id="customMethod" class="form-control" style="width: 120px; font-weight: bold;">
+            <option value="GET">GET</option>
+            <option value="POST">POST</option>
+            <option value="PUT">PUT</option>
+            <option value="DELETE">DELETE</option>
+            <option value="HEAD">HEAD</option>
+          </select>
+          <input type="text" id="customPath" class="form-control" style="flex: 1; min-width: 250px;" value="/api/health" placeholder="/api/health, /items, /cases">
+          <button class="btn" onclick="executeCustomRequest()">Send Request</button>
+        </div>
+
+        <div class="form-group">
+          <label for="customBody">Request Body (JSON for POST/PUT)</label>
+          <textarea id="customBody" class="form-control" rows="3" placeholder='{"username": "admin", "password": "password"}'></textarea>
+        </div>
+
+        <div class="output-wrap">
+          <div class="output-header">
+            <span>Response Inspector</span>
+          </div>
+          <pre id="customOut" class="output-code" style="max-height: 300px;">// Response will display here</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: GITHUB PAGES DEPLOYMENT -->
+    <div id="tab-deploy" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">🚀 How to Publish This Frontend to GitHub Pages</h2>
+            <p class="card-subtitle">Completely decoupled static deployment instructions</p>
+          </div>
+        </div>
+
+        <div style="font-size: 0.9rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 1rem; line-height: 1.6;">
+          <p>
+            Because this frontend is 100% static (HTML, Vanilla CSS, JS) and decoupled from the backend, you can publish the <code>sample_vulnerable_app/frontend/</code> directory directly to <strong>GitHub Pages</strong> or <strong>Netlify / Vercel</strong>!
+          </p>
+
+          <h3 style="color: var(--text-primary); font-size: 1rem;">1. Configure the API URL</h3>
+          <p>
+            Before or after publishing, simply edit <code>frontend/config.json</code>:
+          </p>
+          <pre class="output-code" style="min-height: auto;">{
+  "api_url": "https://your-live-backend-url.com"
+}</pre>
+          <p>
+            Anyone visiting your GitHub Pages site will automatically connect to that API endpoint. Users can also change the API URL on the fly using the input bar at the top!
+          </p>
+
+          <h3 style="color: var(--text-primary); font-size: 1rem;">2. Publishing to GitHub Pages</h3>
+          <ol style="margin-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+            <li>Push this repo or copy the <code>frontend/</code> files to a new GitHub repository (e.g. <code>vulnerable-security-lab-ui</code>).</li>
+            <li>In GitHub repo settings &rarr; <strong>Pages</strong> &rarr; Select <strong>Branch: main</strong> &rarr; <strong>Save</strong>.</li>
+            <li>Your lab frontend is live at <code>https://&lt;your-username&gt;.github.io/&lt;repo-name&gt;/</code>!</li>
+          </ol>
+
+          <h3 style="color: var(--text-primary); font-size: 1rem;">3. Running the Backend</h3>
+          <p>
+            Run the backend locally on port <code>8001</code>:
+          </p>
+          <pre class="output-code" style="min-height: auto;">cd sample_vulnerable_app/backend
+python -m uvicorn app:app --port 8001 --reload</pre>
+          <p>
+            CORS is pre-configured with <code>allow_origins=["*"]</code> so the GitHub Pages frontend can connect seamlessly to your backend or ngrok/cloud tunnel URL.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Northstar Knowledge Security Testing Lab • Decoupled Architecture • Port 8001
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
